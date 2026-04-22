@@ -6,7 +6,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Royal & Culturally Rich Theme
+        // Royal Indian Heritage Theme
         primary: {
           50: '#fef2f2',
           100: '#fee2e2',
@@ -14,61 +14,64 @@ module.exports = {
           300: '#fca5a5',
           400: '#f87171',
           500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b', // Royal Crimson
-          900: '#7f1d1d',
+          600: '#720e0e', // Imperial Crimson
+          700: '#5a0b0b',
+          800: '#3d0707',
+          900: '#2a0505',
         },
         secondary: {
-          50: '#fff9f0', // Creamy Ivory
-          100: '#fff7ed',
-          200: '#ffedd5',
-          300: '#fed7aa',
-          400: '#fdba74',
-          500: '#fb923c',
-          600: '#f97316',
-          700: '#ea580c',
-          800: '#c2410c',
-          900: '#9a3412',
+          50: '#FCF5E5', // Parchment
+          100: '#f5f5f5',
+          200: '#e5e5e5',
+          300: '#d4d4d4',
+          400: '#a3a3a3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#1a1a1a', // Deep Charcoal
         },
         accent: {
-          50: '#fef3c7',
-          100: '#fde68a',
-          200: '#fcd34d',
-          300: '#fbbf24',
-          400: '#f59e0b',
-          500: '#d97706',
-          600: '#b45309', // Antique Gold
+          50: '#fef9e7',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#D4AF37', // Antique Gold
+          600: '#b38728',
           700: '#92400e',
           800: '#78350f',
           900: '#451a03',
         },
-        // Special royal colors
+        // Special heritage colors
         parchment: {
-          light: '#fff9f0',
-          DEFAULT: '#fff9f0', // Creamy Ivory
-          dark: '#ffedd5',
+          light: '#FCF5E5',
+          DEFAULT: '#FCF5E5',
+          dark: '#f5ead5',
+        },
+        ivory: {
+          DEFAULT: '#FFFFF0',
         },
         charcoal: {
-          DEFAULT: '#2d2d3a',
+          DEFAULT: '#1a1a1a',
         },
         gold: {
-          light: '#fde68a',
-          DEFAULT: '#b45309',
-          dark: '#92400e',
+          light: '#fcf6ba',
+          DEFAULT: '#D4AF37',
+          dark: '#b38728',
         },
-        maroon: {
-          light: '#b91c1c',
-          DEFAULT: '#991b1b',
-          dark: '#7f1d1d',
+        crimson: {
+          light: '#8b1111',
+          DEFAULT: '#720e0e',
+          dark: '#5a0b0b',
         }
       },
       fontFamily: {
         // Royal Heritage Fonts
-        display: ['Playfair Display', 'serif'], // For headings - elegant royal style
-        serif: ['Lora', 'serif'], // For body text - classic manuscript
+        display: ['Cinzel', 'serif'], // For headings - stone-carved feel
+        serif: ['Lora', 'serif'], // For body text - elegant manuscript
         sans: ['Inter', 'sans-serif'], // For UI elements - clean modern
-        royal: ['Playfair Display', 'serif'], // For special titles
+        royal: ['Cinzel', 'serif'], // For special titles
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',

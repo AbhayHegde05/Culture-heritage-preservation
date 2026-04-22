@@ -221,7 +221,12 @@ const HeritageDetail = () => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
             <div className="absolute bottom-8 left-8 text-white">
-              <h1 className="text-4xl md:text-5xl font-bold mb-2">{site.name}</h1>
+              <div className="flex items-center space-x-4 mb-2">
+                <h1 className="text-4xl md:text-5xl font-bold font-display">{site.name}</h1>
+                {site.verified && (
+                  <div className="seal-of-authenticity" title="Seal of Authenticity - Verified Heritage Site"></div>
+                )}
+              </div>
               <div className="flex items-center space-x-4 text-lg">
                 <div className="flex items-center space-x-1">
                   <StarIconSolid className="w-5 h-5 text-yellow-400" />
@@ -245,59 +250,59 @@ const HeritageDetail = () => {
       </section>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ backgroundColor: '#FCF5E5' }}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Overview */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">{site.description}</p>
+            <div className="vintage-card p-6">
+              <h2 className="text-2xl font-bold font-display mb-4" style={{ color: '#720e0e' }}>Overview</h2>
+              <p className="text-gray-700 leading-relaxed mb-4 font-serif">{site.description}</p>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <span className="block text-2xl font-bold text-primary-600 capitalize">
+                <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#FCF5E5', border: '1px solid #D4AF37' }}>
+                  <span className="block text-2xl font-bold capitalize font-display" style={{ color: '#720e0e' }}>
                     {site.category.replace('_', ' ')}
                   </span>
-                  <span className="text-sm text-gray-600">Category</span>
+                  <span className="text-sm text-gray-600 font-serif">Category</span>
                 </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <span className="block text-2xl font-bold text-primary-600">
+                <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#FCF5E5', border: '1px solid #D4AF37' }}>
+                  <span className="block text-2xl font-bold font-display" style={{ color: '#720e0e' }}>
                     {site.history.established}
                   </span>
-                  <span className="text-sm text-gray-600">Established</span>
+                  <span className="text-sm text-gray-600 font-serif">Established</span>
                 </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <span className="block text-2xl font-bold text-primary-600">
+                <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#FCF5E5', border: '1px solid #D4AF37' }}>
+                  <span className="block text-2xl font-bold font-display" style={{ color: '#720e0e' }}>
                     {site.ratings.average.toFixed(1)}
                   </span>
-                  <span className="text-sm text-gray-600">Rating</span>
+                  <span className="text-sm text-gray-600 font-serif">Rating</span>
                 </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <span className="block text-2xl font-bold text-primary-600">
+                <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#FCF5E5', border: '1px solid #D4AF37' }}>
+                  <span className="block text-2xl font-bold font-display" style={{ color: '#720e0e' }}>
                     {site.ratings.count}
                   </span>
-                  <span className="text-sm text-gray-600">Reviews</span>
+                  <span className="text-sm text-gray-600 font-serif">Reviews</span>
                 </div>
               </div>
             </div>
 
             {/* Historical Significance */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Historical Significance</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">
+            <div className="vintage-card p-6">
+              <h2 className="text-2xl font-bold font-display mb-4" style={{ color: '#720e0e' }}>Historical Significance</h2>
+              <p className="text-gray-700 leading-relaxed mb-4 font-serif">
                 {site.history.historicalSignificance}
               </p>
               {site.history.architecture && (
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Architecture</h3>
-                  <p className="text-gray-700">{site.history.architecture}</p>
+                  <h3 className="text-lg font-semibold font-display mb-2" style={{ color: '#720e0e' }}>Architecture</h3>
+                  <p className="text-gray-700 font-serif">{site.history.architecture}</p>
                 </div>
               )}
               {site.history.culturalImportance && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Cultural Importance</h3>
-                  <p className="text-gray-700">{site.history.culturalImportance}</p>
+                  <h3 className="text-lg font-semibold font-display mb-2" style={{ color: '#720e0e' }}>Cultural Importance</h3>
+                  <p className="text-gray-700 font-serif">{site.history.culturalImportance}</p>
                 </div>
               )}
             </div>

@@ -118,7 +118,15 @@ const Home = () => {
                 alt={slide.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0" style={{ backgroundColor: 'rgba(153, 27, 27, 0.5)' }}></div>
+              <div className="absolute inset-0" style={{ backgroundColor: 'rgba(114, 14, 14, 0.5)' }}></div>
+              {/* Mandala Pattern Overlay */}
+              <div 
+                className="absolute inset-0" 
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M30 30c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm0-10c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm10 0c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm0 10c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm-10 10c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm10 0c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                  backgroundSize: '60px 60px'
+                }}
+              ></div>
             </div>
           ))}
         </div>
@@ -126,7 +134,7 @@ const Home = () => {
         {/* Hero Content */}
         <div className="relative h-full flex items-center justify-center text-center text-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in font-display text-shadow">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in font-display text-shadow gold-foil-text">
               {heroSlides[currentSlide].title}
             </h1>
             <p className="text-xl md:text-2xl mb-8 animate-slide-up" style={{ color: '#ffedd5' }}>
@@ -243,14 +251,14 @@ const Home = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.isArray(featuredSites?.data) ? featuredSites.data.slice(0, 6).map((site) => (
-                <div key={site._id} className="card group hover:scale-105 transition-transform duration-300">
-                  <div className="relative h-48 overflow-hidden">
+                <div key={site._id} className="card group hover:scale-105 transition-transform duration-300 bg-ivory">
+                  <div className="relative h-48 overflow-hidden rounded-t-2xl">
                     <img
                       src={site.images?.[0]?.url || 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
                       alt={site.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute top-4 right-4 backdrop-blur-sm px-3 py-1 rounded-full border" style={{ backgroundColor: 'rgba(255, 249, 240, 0.9)', borderColor: '#fdba74' }}>
+                    <div className="absolute top-4 right-4 backdrop-blur-sm px-3 py-1 rounded-full border" style={{ backgroundColor: 'rgba(255, 255, 240, 0.95)', borderColor: '#D4AF37' }}>
                       <div className="flex items-center space-x-1">
                         <StarIconSolid className="w-4 h-4 text-yellow-500" />
                         <span className="text-sm font-medium">{site.ratings.average.toFixed(1)}</span>
@@ -265,7 +273,7 @@ const Home = () => {
                   </div>
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium font-sans capitalize" style={{ color: '#c2410c' }}>
+                      <span className="text-sm font-medium font-sans capitalize" style={{ color: '#720e0e' }}>
                         {site.category.replace('_', ' ')}
                       </span>
                       <div className="flex items-center text-secondary-500 text-sm font-sans">
@@ -273,15 +281,15 @@ const Home = () => {
                         {site.location.city}
                       </div>
                     </div>
-                    <h3 className="text-xl font-display font-semibold text-secondary-800 mb-2 transition-colors" style={{ color: '#2d2d3a' }}>
+                    <h3 className="text-xl font-display font-semibold mb-2 transition-colors" style={{ color: '#720e0e' }}>
                       {site.name}
                     </h3>
-                    <p className="text-secondary-600 mb-4 line-clamp-2 font-serif leading-relaxed">
+                    <p className="text-secondary-900 mb-4 line-clamp-2 font-serif leading-relaxed">
                       {site.description}
                     </p>
                     <Link
                       to={`/heritage/${site._id}`}
-                      className="inline-flex items-center font-medium font-sans" style={{ color: '#ea580c' }}
+                      className="inline-flex items-center font-medium font-sans" style={{ color: '#D4AF37' }}
                     >
                       Explore Site
                       <ArrowRightIcon className="w-4 h-4 ml-1" />
