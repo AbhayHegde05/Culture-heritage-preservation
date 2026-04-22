@@ -20,6 +20,15 @@ import { explore, heritage } from '../services/api';
 import { categories } from '../config/constants';
 import 'leaflet/dist/leaflet.css';
 
+// ── Gold Verified Badge ────────────────────────────────────────────
+const GoldVerifiedBadge = () => (
+  <span className="gold-verified-badge">
+    <ShieldCheckIcon style={{ width: 12, height: 12 }} />
+    Verified
+  </span>
+);
+
+
 // Fix for default markers in Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -212,7 +221,7 @@ const Explore = () => {
   }, [currentData, viewMode]);
 
   const SiteCard = ({ site }) => (
-    <div className="bg-secondary-50 border border-accent-500/20 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group hover:scale-105 transition-transform duration-300">
+    <div className="card group hover:scale-105 transition-transform duration-300">
       <div className="relative h-48 overflow-hidden">
         <img
           src={site.images?.[0]?.url || 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
@@ -226,15 +235,13 @@ const Explore = () => {
           </div>
         </div>
         <div className="absolute top-4 left-4 flex items-center gap-2">
-          <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium capitalize">
+          <span
+            className="px-3 py-1 rounded-full text-sm font-medium capitalize font-display text-xs uppercase tracking-wider"
+            style={{ backgroundColor: '#580000', color: '#f5ead5' }}
+          >
             {site.category.replace('_', ' ')}
           </span>
-          {site.verified && (
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center">
-              <ShieldCheckIcon className="w-3 h-3 mr-1" />
-              Verified
-            </span>
-          )}
+          {site.verified && <GoldVerifiedBadge />}
         </div>
         {site.distance && (
           <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
@@ -249,22 +256,23 @@ const Explore = () => {
             {site.location.city}, {site.location.state}
           </div>
         </div>
-        <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+        <h3 className="text-xl font-semibold font-display mb-2 group-hover:text-accent-500 transition-colors" style={{ color: '#580000' }}>
           {site.name}
         </h3>
-        <p className="text-gray-600 mb-4 line-clamp-2">
+        <p className="text-secondary-600 mb-4 line-clamp-2 font-serif">
           {site.description}
         </p>
         <div className="flex items-center justify-between">
           <Link
             to={`/heritage/${site._id}`}
-            className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+            className="inline-flex items-center font-medium font-display text-xs uppercase tracking-wider transition-colors"
+            style={{ color: '#D4AF37' }}
           >
             Explore Site
             <ArrowRightIcon className="w-4 h-4 ml-1" />
           </Link>
-          <div className="flex items-center space-x-1 text-sm text-gray-500">
-            <StarIcon className="w-4 h-4" />
+          <div className="flex items-center space-x-1 text-sm" style={{ color: '#580000' }}>
+            <StarIcon className="w-4 h-4" style={{ color: '#D4AF37' }} />
             <span>{site.ratings.count} reviews</span>
           </div>
         </div>
@@ -273,7 +281,7 @@ const Explore = () => {
   );
 
   const SiteListItem = ({ site }) => (
-    <div className="bg-secondary-50 border border-accent-500/20 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+    <div className="vintage-card p-6 hover:shadow-lg transition-all duration-300">
       <div className="flex flex-col md:flex-row gap-6">
         <div className="md:w-48 h-32 md:h-auto overflow-hidden rounded-lg">
           <img
@@ -286,15 +294,13 @@ const Explore = () => {
           <div className="flex items-start justify-between mb-2">
             <div>
               <div className="flex items-center space-x-3 mb-2">
-                <span className="bg-primary-100 text-primary-600 px-2 py-1 rounded-full text-xs font-medium capitalize">
+                <span
+                  className="px-2 py-1 rounded-full text-xs font-display uppercase tracking-wider capitalize"
+                  style={{ backgroundColor: 'rgba(88,0,0,0.08)', color: '#580000', border: '1px solid rgba(88,0,0,0.2)' }}
+                >
                   {site.category.replace('_', ' ')}
                 </span>
-                {site.status === 'active' && (
-                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center">
-                    <ShieldCheckIcon className="w-3 h-3 mr-1" />
-                    Verified
-                  </span>
-                )}
+                {site.status === 'active' && <GoldVerifiedBadge />}
                 <div className="flex items-center space-x-1 text-sm text-gray-500">
                   <StarIconSolid className="w-4 h-4 text-yellow-500" />
                   <span>{site.ratings.average.toFixed(1)}</span>
@@ -304,9 +310,9 @@ const Explore = () => {
                   <span className="text-sm text-gray-500">{site.distance} km away</span>
                 )}
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{site.name}</h3>
-              <div className="flex items-center text-gray-600 text-sm mb-2">
-                <MapPinIcon className="w-4 h-4 mr-1" />
+              <h3 className="text-xl font-semibold font-display mb-2" style={{ color: '#580000' }}>{site.name}</h3>
+              <div className="flex items-center text-secondary-600 text-sm mb-2 font-serif">
+                <MapPinIcon className="w-4 h-4 mr-1" style={{ color: '#D4AF37' }} />
                 {site.location.address}, {site.location.city}, {site.location.state}
               </div>
             </div>
@@ -317,7 +323,7 @@ const Explore = () => {
               Explore
             </Link>
           </div>
-          <p className="text-gray-600 line-clamp-2">{site.description}</p>
+          <p className="text-secondary-600 line-clamp-2 font-serif">{site.description}</p>
         </div>
       </div>
     </div>
@@ -334,7 +340,7 @@ const Explore = () => {
               Explore Heritage Sites
             </h1>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto text-primary-100">
-              Discover magnificent temples, serene lakes, ancient forts, and more. 
+              Discover magnificent temples, serene lakes, ancient forts, and more.
               Find your next cultural adventure.
             </p>
           </div>
@@ -358,11 +364,10 @@ const Explore = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                      activeTab === tab.id
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${activeTab === tab.id
                         ? 'bg-white text-primary-600 shadow-sm'
                         : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span>{tab.label}</span>
@@ -375,9 +380,8 @@ const Explore = () => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'grid' ? 'bg-primary-100 text-primary-600' : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-primary-100 text-primary-600' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM13 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2z" />
@@ -385,9 +389,8 @@ const Explore = () => {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'list' ? 'bg-primary-100 text-primary-600' : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-primary-100 text-primary-600' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
@@ -395,9 +398,8 @@ const Explore = () => {
               </button>
               <button
                 onClick={() => setViewMode('map')}
-                className={`p-2 rounded-lg transition-colors ${
-                  viewMode === 'map' ? 'bg-primary-100 text-primary-600' : 'text-gray-600 hover:bg-gray-100'
-                }`}
+                className={`p-2 rounded-lg transition-colors ${viewMode === 'map' ? 'bg-primary-100 text-primary-600' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
               >
                 <GlobeAltIcon className="w-5 h-5" />
               </button>
@@ -497,7 +499,7 @@ const Explore = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Results Header */}
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold font-display mb-6" style={{ color: '#580000' }}>
               {activeTab === 'search' && 'Search Results'}
               {activeTab === 'recommendations' && 'Recommended for You'}
               {activeTab === 'top' && 'Top Rated Heritage Sites'}
@@ -593,11 +595,11 @@ const Explore = () => {
               <BuildingLibraryIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-900 mb-2">No heritage sites found</h3>
               <p className="text-gray-600 mb-6">
-                {activeTab === 'search' 
-                  ? 'Try adjusting your search terms or filters' 
+                {activeTab === 'search'
+                  ? 'Try adjusting your search terms or filters'
                   : activeTab === 'nearby'
-                  ? 'No heritage sites found near your location'
-                  : 'Check back later for new additions'}
+                    ? 'No heritage sites found near your location'
+                    : 'Check back later for new additions'}
               </p>
               <Link
                 to="/care-the-culture"

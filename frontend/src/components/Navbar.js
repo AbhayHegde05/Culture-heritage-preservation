@@ -51,12 +51,11 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b-2 border-accent-500 ${
-        isScrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b-2 border-accent-500 ${isScrolled
           ? 'bg-primary-600/98 backdrop-blur-md shadow-lg'
           : 'bg-primary-600 shadow-md'
-      }`}
-      style={{ backgroundColor: '#720e0e' }}
+        }`}
+      style={{ backgroundColor: '#580000' }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -80,16 +79,15 @@ const Navbar = () => {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.href;
-              
+
               return (
                 <Link
                   key={item.name}
                   to={item.href}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 font-display uppercase tracking-widest ${
-                    isActive
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 font-display uppercase tracking-widest ${isActive
                       ? 'text-accent-500 bg-primary-700'
                       : 'text-white hover:text-accent-500 hover:bg-primary-700'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{item.name}</span>
@@ -150,28 +148,27 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t border-accent-500 py-4 bg-primary-600">
+          <div className="lg:hidden border-t border-accent-500 py-4" style={{ backgroundColor: '#580000' }}>
             <div className="space-y-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.href;
-                
+
                 return (
                   <Link
                     key={item.name}
                     to={item.href}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 font-display uppercase tracking-wider ${
-                      isActive
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 font-display uppercase tracking-wider ${isActive
                         ? 'text-accent-500 bg-primary-700'
                         : 'text-white hover:text-accent-500 hover:bg-primary-700'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-5 h-5" />
                     <span>{item.name}</span>
                   </Link>
                 );
               })}
-              
+
               <div className="border-t border-accent-500 pt-4 mt-4">
                 {isAuthenticated ? (
                   <div className="space-y-2">

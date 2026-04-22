@@ -23,6 +23,15 @@ import ImageGallery from 'react-image-gallery';
 import { heritage, donations } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
+// ── Gold Verified Badge ─────────────────────────────────────────────────────
+const GoldVerifiedBadge = () => (
+  <span className="gold-verified-badge">
+    <ShieldCheckIcon style={{ width: 12, height: 12 }} />
+    Verified
+  </span>
+);
+
+
 const HeritageDetail = () => {
   const { id } = useParams();
   const { user, isAuthenticated } = useAuth();
@@ -157,39 +166,41 @@ const HeritageDetail = () => {
     );
   }
 
-  const images = site.images?.length > 0 
+  const images = site.images?.length > 0
     ? site.images.map(img => ({
-        original: img.url,
-        thumbnail: img.url,
-        description: img.caption || site.name,
-      }))
+      original: img.url,
+      thumbnail: img.url,
+      description: img.caption || site.name,
+    }))
     : [{
-        original: 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-        thumbnail: 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
-        description: site.name,
-      }];
+      original: 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+      thumbnail: 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+      description: site.name,
+    }];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#FCF5E5' }}>
       {/* Header */}
-      <div className="bg-white shadow-sm">
+      <div style={{ backgroundColor: '#FCF5E5', borderBottom: '1px solid rgba(212,175,55,0.4)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/explore" className="flex items-center text-gray-600 hover:text-gray-900">
+            <Link to="/explore" className="flex items-center font-display text-xs uppercase tracking-wider" style={{ color: '#580000' }}>
               <ChevronLeftIcon className="w-5 h-5 mr-1" />
               Back to Explore
             </Link>
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleShare}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                className="flex items-center space-x-2 font-display text-xs uppercase tracking-wider transition-colors"
+                style={{ color: '#580000' }}
               >
                 <ShareIcon className="w-5 h-5" />
                 <span>Share</span>
               </button>
               <button
                 onClick={handleDonate}
-                className="flex items-center space-x-2 text-primary-600 hover:text-primary-700"
+                className="flex items-center space-x-2 font-display text-xs uppercase tracking-wider transition-colors"
+                style={{ color: '#D4AF37' }}
               >
                 <HeartIcon className="w-5 h-5" />
                 <span>Donate</span>
@@ -238,9 +249,8 @@ const HeritageDetail = () => {
                   <span>{site.location.city}, {site.location.state}</span>
                 </div>
                 {site.verified && (
-                  <div className="flex items-center space-x-1 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                    <ShieldCheckIcon className="w-4 h-4" />
-                    <span>Verified</span>
+                  <div className="absolute top-4 left-4">
+                    <GoldVerifiedBadge />
                   </div>
                 )}
               </div>
@@ -258,7 +268,7 @@ const HeritageDetail = () => {
             <div className="vintage-card p-6">
               <h2 className="text-2xl font-bold font-display mb-4" style={{ color: '#720e0e' }}>Overview</h2>
               <p className="text-gray-700 leading-relaxed mb-4 font-serif">{site.description}</p>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                 <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#FCF5E5', border: '1px solid #D4AF37' }}>
                   <span className="block text-2xl font-bold capitalize font-display" style={{ color: '#720e0e' }}>
@@ -309,20 +319,20 @@ const HeritageDetail = () => {
 
             {/* Visitor Information */}
             {site.visitorInfo && (
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Visitor Information</h2>
-                
+              <div className="vintage-card p-6">
+                <h2 className="text-2xl font-bold font-display mb-4" style={{ color: '#580000' }}>Visitor Information</h2>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {site.visitorInfo.visitingHours && (
                     <div className="flex items-start space-x-3">
-                      <ClockIcon className="w-5 h-5 text-gray-400 mt-1" />
+                      <ClockIcon className="w-5 h-5 mt-1" style={{ color: '#D4AF37' }} />
                       <div>
-                        <h3 className="font-semibold text-gray-900">Visiting Hours</h3>
-                        <p className="text-gray-600">
+                        <h3 className="font-semibold font-display" style={{ color: '#580000' }}>Visiting Hours</h3>
+                        <p className="text-secondary-700 font-serif">
                           {site.visitorInfo.visitingHours.opening} - {site.visitorInfo.visitingHours.closing}
                         </p>
                         {site.visitorInfo.visitingHours.closedDays?.length > 0 && (
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-secondary-500 font-serif">
                             Closed: {site.visitorInfo.visitingHours.closedDays.join(', ')}
                           </p>
                         )}
@@ -332,21 +342,15 @@ const HeritageDetail = () => {
 
                   {site.visitorInfo.entryFee && (
                     <div className="flex items-start space-x-3">
-                      <CurrencyDollarIcon className="w-5 h-5 text-gray-400 mt-1" />
+                      <CurrencyDollarIcon className="w-5 h-5 mt-1" style={{ color: '#D4AF37' }} />
                       <div>
-                        <h3 className="font-semibold text-gray-900">Entry Fee</h3>
-                        <p className="text-gray-600">
-                          Adults: ₹{site.visitorInfo.entryFee.adults || 0}
-                        </p>
+                        <h3 className="font-semibold font-display" style={{ color: '#580000' }}>Entry Fee</h3>
+                        <p className="text-secondary-700 font-serif">Adults: ₹{site.visitorInfo.entryFee.adults || 0}</p>
                         {site.visitorInfo.entryFee.children && (
-                          <p className="text-gray-600">
-                            Children: ₹{site.visitorInfo.entryFee.children}
-                          </p>
+                          <p className="text-secondary-700 font-serif">Children: ₹{site.visitorInfo.entryFee.children}</p>
                         )}
                         {site.visitorInfo.entryFee.foreigners && (
-                          <p className="text-gray-600">
-                            Foreigners: ${site.visitorInfo.entryFee.foreigners}
-                          </p>
+                          <p className="text-secondary-700 font-serif">Foreigners: ${site.visitorInfo.entryFee.foreigners}</p>
                         )}
                       </div>
                     </div>
@@ -354,20 +358,20 @@ const HeritageDetail = () => {
 
                   {site.visitorInfo.bestTimeToVisit && (
                     <div className="flex items-start space-x-3">
-                      <CalendarIcon className="w-5 h-5 text-gray-400 mt-1" />
+                      <CalendarIcon className="w-5 h-5 mt-1" style={{ color: '#D4AF37' }} />
                       <div>
-                        <h3 className="font-semibold text-gray-900">Best Time to Visit</h3>
-                        <p className="text-gray-600">{site.visitorInfo.bestTimeToVisit}</p>
+                        <h3 className="font-semibold font-display" style={{ color: '#580000' }}>Best Time to Visit</h3>
+                        <p className="text-secondary-700 font-serif">{site.visitorInfo.bestTimeToVisit}</p>
                       </div>
                     </div>
                   )}
 
                   {site.visitorInfo.estimatedDuration && (
                     <div className="flex items-start space-x-3">
-                      <ClockIcon className="w-5 h-5 text-gray-400 mt-1" />
+                      <ClockIcon className="w-5 h-5 mt-1" style={{ color: '#D4AF37' }} />
                       <div>
-                        <h3 className="font-semibold text-gray-900">Estimated Duration</h3>
-                        <p className="text-gray-600">{site.visitorInfo.estimatedDuration}</p>
+                        <h3 className="font-semibold font-display" style={{ color: '#580000' }}>Estimated Duration</h3>
+                        <p className="text-secondary-700 font-serif">{site.visitorInfo.estimatedDuration}</p>
                       </div>
                     </div>
                   )}
@@ -375,12 +379,13 @@ const HeritageDetail = () => {
 
                 {site.visitorInfo.facilities?.length > 0 && (
                   <div className="mt-6">
-                    <h3 className="font-semibold text-gray-900 mb-3">Available Facilities</h3>
+                    <h3 className="font-semibold font-display mb-3" style={{ color: '#580000' }}>Available Facilities</h3>
                     <div className="flex flex-wrap gap-2">
                       {site.visitorInfo.facilities.map((facility, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-primary-100 text-primary-600 rounded-full text-sm"
+                          className="px-3 py-1 rounded-full text-sm font-display uppercase tracking-wider"
+                          style={{ backgroundColor: 'rgba(212,175,55,0.15)', color: '#580000', border: '1px solid rgba(212,175,55,0.4)' }}
                         >
                           {facility}
                         </span>
@@ -392,14 +397,14 @@ const HeritageDetail = () => {
             )}
 
             {/* Location */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Location</h2>
+            <div className="vintage-card p-6">
+              <h2 className="text-2xl font-bold font-display mb-4" style={{ color: '#580000' }}>Location</h2>
               <div className="space-y-4">
                 <div className="flex items-start space-x-3">
-                  <MapPinIcon className="w-5 h-5 text-gray-400 mt-1" />
+                  <MapPinIcon className="w-5 h-5 mt-1" style={{ color: '#D4AF37' }} />
                   <div>
-                    <p className="text-gray-700">{site.location.address}</p>
-                    <p className="text-gray-600">
+                    <p className="text-secondary-700 font-serif">{site.location.address}</p>
+                    <p className="text-secondary-600 font-serif">
                       {site.location.city}, {site.location.state}, {site.location.country}
                     </p>
                   </div>
@@ -428,19 +433,22 @@ const HeritageDetail = () => {
               </div>
 
               {/* Map placeholder */}
-              <div className="mt-6 h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                <div className="text-center text-gray-500">
+              <div
+                className="mt-6 h-64 rounded-lg flex items-center justify-center royal-border"
+                style={{ backgroundColor: '#FCF5E5' }}
+              >
+                <div className="text-center" style={{ color: '#D4AF37' }}>
                   <MapPinIcon className="w-8 h-8 mx-auto mb-2" />
-                  <p>Interactive Map</p>
-                  <p className="text-sm">({site.location.coordinates.latitude}, {site.location.coordinates.longitude})</p>
+                  <p className="font-display text-xs uppercase tracking-wider" style={{ color: '#580000' }}>Interactive Map</p>
+                  <p className="text-sm font-serif" style={{ color: '#580000' }}>({site.location.coordinates.latitude}, {site.location.coordinates.longitude})</p>
                 </div>
               </div>
             </div>
 
             {/* Reviews */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="vintage-card p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Reviews</h2>
+                <h2 className="text-2xl font-bold font-display" style={{ color: '#580000' }}>Reviews</h2>
                 <button
                   onClick={() => setShowReviewForm(!showReviewForm)}
                   className="btn-primary"
@@ -451,10 +459,10 @@ const HeritageDetail = () => {
 
               {/* Review Form */}
               {showReviewForm && (
-                <div className="mb-6 p-6 bg-gray-50 rounded-lg">
+                <div className="mb-6 p-6 rounded-lg" style={{ backgroundColor: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.3)' }}>
                   <form onSubmit={handleSubmit(handleReviewSubmit)} className="space-y-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
                         Rating
                       </label>
                       <select
@@ -474,7 +482,7 @@ const HeritageDetail = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
                         Your Review
                       </label>
                       <textarea
@@ -489,7 +497,7 @@ const HeritageDetail = () => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
                         Visit Date (Optional)
                       </label>
                       <input
@@ -510,7 +518,8 @@ const HeritageDetail = () => {
                       <button
                         type="button"
                         onClick={() => setShowReviewForm(false)}
-                        className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                        className="px-4 py-2 rounded-lg transition-colors font-display text-xs uppercase tracking-wider"
+                        style={{ border: '1px solid rgba(212,175,55,0.4)', color: '#580000', backgroundColor: '#FFFFF0' }}
                       >
                         Cancel
                       </button>
@@ -523,22 +532,21 @@ const HeritageDetail = () => {
               <div className="space-y-4">
                 {site.reviews?.length > 0 ? (
                   site.reviews.map((review) => (
-                    <div key={review._id} className="border-b border-gray-200 pb-4 last:border-0">
+                    <div key={review._id} className="border-b pb-4 last:border-0" style={{ borderColor: 'rgba(212,175,55,0.3)' }}>
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                            <UserIcon className="w-5 h-5 text-primary-600" />
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(212,175,55,0.15)' }}>
+                            <UserIcon className="w-5 h-5" style={{ color: '#580000' }} />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-gray-900">{review.user.name}</h4>
+                            <h4 className="font-semibold font-display text-sm" style={{ color: '#580000' }}>{review.user.name}</h4>
                             <div className="flex items-center space-x-2 text-sm text-gray-500">
                               <div className="flex items-center">
                                 {[...Array(5)].map((_, i) => (
                                   <StarIconSolid
                                     key={i}
-                                    className={`w-4 h-4 ${
-                                      i < review.rating ? 'text-yellow-400' : 'text-gray-300'
-                                    }`}
+                                    className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'
+                                      }`}
                                   />
                                 ))}
                               </div>
@@ -605,19 +613,17 @@ const HeritageDetail = () => {
 
             {/* Accessibility */}
             {site.accessibility && (
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Accessibility</h3>
+              <div className="vintage-card p-6">
+                <h3 className="text-lg font-bold font-display mb-4" style={{ color: '#580000' }}>Accessibility</h3>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-2">
-                    <div className={`w-4 h-4 rounded-full ${
-                      site.accessibility.wheelchairAccess ? 'bg-green-500' : 'bg-gray-300'
-                    }`}></div>
+                    <div className={`w-4 h-4 rounded-full ${site.accessibility.wheelchairAccess ? 'bg-green-500' : 'bg-gray-300'
+                      }`}></div>
                     <span className="text-gray-700">Wheelchair Access</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className={`w-4 h-4 rounded-full ${
-                      site.accessibility.parkingAvailable ? 'bg-green-500' : 'bg-gray-300'
-                    }`}></div>
+                    <div className={`w-4 h-4 rounded-full ${site.accessibility.parkingAvailable ? 'bg-green-500' : 'bg-gray-300'
+                      }`}></div>
                     <span className="text-gray-700">Parking Available</span>
                   </div>
                 </div>
@@ -629,18 +635,19 @@ const HeritageDetail = () => {
 
       {/* Donate Modal */}
       {showDonateModal && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="rounded-2xl max-w-md w-full p-6 vintage-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Make a Donation</h3>
+              <h3 className="text-xl font-bold font-display" style={{ color: '#580000' }}>Make a Donation</h3>
               <button
                 onClick={() => setShowDonateModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
+                className="p-2 rounded-lg transition-colors"
+                style={{ backgroundColor: 'rgba(212,175,55,0.1)' }}
               >
-                <XMarkIcon className="w-5 h-5 text-gray-500" />
+                <XMarkIcon className="w-5 h-5" style={{ color: '#580000' }} />
               </button>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="font-serif mb-6" style={{ color: '#580000' }}>
               Your donation will help preserve {site.name} for future generations.
             </p>
             <Link

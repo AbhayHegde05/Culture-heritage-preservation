@@ -6,18 +6,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Royal Indian Heritage Theme
+        // Royal Indian Heritage Theme — Imperial Maroon palette
         primary: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#720e0e', // Imperial Crimson
-          700: '#5a0b0b',
-          800: '#3d0707',
-          900: '#2a0505',
+          50: '#fdf2f2',
+          100: '#fce4e4',
+          200: '#f9c2c2',
+          300: '#f49090',
+          400: '#ec5454',
+          500: '#580000', // Imperial Maroon — brand primary
+          600: '#4a0000',
+          700: '#380000',
+          800: '#280000',
+          900: '#1a0000',
         },
         secondary: {
           50: '#FCF5E5', // Parchment
@@ -61,17 +61,19 @@ module.exports = {
           dark: '#b38728',
         },
         crimson: {
-          light: '#8b1111',
-          DEFAULT: '#720e0e',
-          dark: '#5a0b0b',
+          light: '#720e0e',
+          DEFAULT: '#580000',
+          dark: '#4a0000',
         }
       },
       fontFamily: {
         // Royal Heritage Fonts
-        display: ['Cinzel', 'serif'], // For headings - stone-carved feel
-        serif: ['Lora', 'serif'], // For body text - elegant manuscript
-        sans: ['Inter', 'sans-serif'], // For UI elements - clean modern
-        royal: ['Cinzel', 'serif'], // For special titles
+        playfair: ['Playfair Display', 'serif'],  // For hero titles — dramatic serif
+        display: ['Cinzel', 'serif'],             // For subheadings — stone-carved feel
+        serif: ['Lora', 'serif'],               // For body text — elegant manuscript
+        sans: ['Inter', 'sans-serif'],         // For UI elements — clean modern
+        royal: ['Cinzel', 'serif'],             // Alias for special titles
+        cinzel: ['Cinzel', 'serif'],             // Explicit Cinzel class
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
