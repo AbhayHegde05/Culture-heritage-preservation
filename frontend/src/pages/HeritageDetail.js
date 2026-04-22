@@ -12,12 +12,11 @@ import {
   GlobeAltIcon,
   HeartIcon,
   ShareIcon,
-  CameraIcon,
   CalendarIcon,
   UserIcon,
   ChevronLeftIcon,
-  ChevronRightIcon,
   XMarkIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import ImageGallery from 'react-image-gallery';
@@ -83,7 +82,7 @@ const HeritageDetail = () => {
           url: window.location.href,
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+        // User cancelled sharing
       }
     } else {
       // Fallback: Copy to clipboard
@@ -102,8 +101,44 @@ const HeritageDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="loading-spinner w-12 h-12"></div>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header skeleton */}
+        <div className="bg-white shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div className="h-5 w-32 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+        {/* Hero skeleton */}
+        <div className="h-96 lg:h-[500px] bg-gray-200 animate-pulse"></div>
+        {/* Content skeleton */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-8">
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="h-8 w-48 bg-gray-200 rounded mb-4 animate-pulse"></div>
+                <div className="h-4 w-full bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div className="h-4 w-3/4 bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div className="grid grid-cols-4 gap-4 mt-6">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="text-center p-4 bg-gray-50 rounded-lg">
+                      <div className="h-6 w-16 bg-gray-200 rounded mx-auto mb-2 animate-pulse"></div>
+                      <div className="h-3 w-12 bg-gray-200 rounded mx-auto animate-pulse"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <div className="h-8 w-64 bg-gray-200 rounded mb-4 animate-pulse"></div>
+                <div className="h-4 w-full bg-gray-200 rounded mb-2 animate-pulse"></div>
+                <div className="h-4 w-5/6 bg-gray-200 rounded mb-2 animate-pulse"></div>
+              </div>
+            </div>
+            <div className="space-y-6">
+              <div className="bg-white rounded-xl shadow-lg p-6 h-48 animate-pulse"></div>
+              <div className="bg-white rounded-xl shadow-lg p-6 h-48 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -197,6 +232,12 @@ const HeritageDetail = () => {
                   <MapPinIcon className="w-5 h-5" />
                   <span>{site.location.city}, {site.location.state}</span>
                 </div>
+                {site.verified && (
+                  <div className="flex items-center space-x-1 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    <ShieldCheckIcon className="w-4 h-4" />
+                    <span>Verified</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

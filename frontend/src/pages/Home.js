@@ -10,6 +10,7 @@ import {
   UserGroupIcon,
   BuildingLibraryIcon,
   GlobeAltIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { heritage, explore } from '../services/api';
@@ -26,21 +27,12 @@ const Home = () => {
     }
   );
 
-  // Fetch statistics
+  // Fetch statistics from the new endpoint
   const { data: stats } = useQuery(
-    'stats',
-    async () => {
-      const [sitesResponse, categoriesResponse] = await Promise.all([
-        heritage.getAll({ limit: 1 }),
-        explore.getCategories(),
-      ]);
-      return {
-        totalSites: sitesResponse.data.total,
-        categories: categoriesResponse.data.length,
-      };
-    },
+    'heritageStats',
+    () => heritage.getStats(),
     {
-      staleTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 10 * 60 * 1000,
     }
   );
 
@@ -102,10 +94,10 @@ const Home = () => {
   ];
 
   const statsData = [
-    { label: 'Heritage Sites', value: stats?.totalSites || 5, icon: BuildingLibraryIcon },
-    { label: 'Categories', value: stats?.categories || 4, icon: GlobeAltIcon },
-    { label: 'Contributors', value: '500+', icon: UserGroupIcon },
-    { label: 'Preserved', value: '1000+', icon: HeartIcon },
+    { label: 'Heritage Sites', value: stats?.data?.totalVerified || 0, icon: BuildingLibraryIcon },
+    { label: 'Categories', value: stats?.data?.categoryBreakdown?.length || 0, icon: GlobeAltIcon },
+    { label: 'Contributors', value: stats?.data?.totalContributors || 0, icon: UserGroupIcon },
+    { label: 'Preserved', value: stats?.data?.totalVerified || 0, icon: HeartIcon },
   ];
 
   return (
@@ -126,7 +118,7 @@ const Home = () => {
                 alt={slide.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black/50"></div>
+              <div className="absolute inset-0" style={{ backgroundColor: 'rgba(153, 27, 27, 0.5)' }}></div>
             </div>
           ))}
         </div>
@@ -134,7 +126,7 @@ const Home = () => {
         {/* Hero Content */}
         <div className="relative h-full flex items-center justify-center text-center text-white">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in font-display text-shadow">
               {heroSlides[currentSlide].title}
             </h1>
             <p className="text-xl md:text-2xl mb-8 animate-slide-up" style={{ color: '#ffedd5' }}>
@@ -264,6 +256,12 @@ const Home = () => {
                         <span className="text-sm font-medium">{site.ratings.average.toFixed(1)}</span>
                       </div>
                     </div>
+                    {site.status === 'active' && (
+                      <div className="absolute top-4 left-4 bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                        <ShieldCheckIcon className="w-3 h-3 mr-1" />
+                        Verified
+                      </div>
+                    )}
                   </div>
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-2">

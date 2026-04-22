@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import { useForm } from 'react-hook-form';
@@ -6,8 +6,6 @@ import toast from 'react-hot-toast';
 import {
   HeartIcon,
   MapPinIcon,
-  StarIcon,
-  CameraIcon,
   PlusIcon,
   MagnifyingGlassIcon,
   FunnelIcon,
@@ -15,10 +13,12 @@ import {
   CloudArrowUpIcon,
   XMarkIcon,
   BuildingLibraryIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { heritage, explore } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { categories } from '../config/constants';
 
 const CareTheCulture = () => {
   const { isAuthenticated, user } = useAuth();
@@ -26,6 +26,9 @@ const CareTheCulture = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [imagePreviews, setImagePreviews] = useState([]);
+  const [imageFiles, setImageFiles] = useState([]);
+  const fileInputRef = useRef(null);
 
   const {
     register,
@@ -55,18 +58,22 @@ const CareTheCulture = () => {
     }
   );
 
-  const categories = [
-    { value: 'all', label: 'All Categories', icon: '🏛️' },
-    { value: 'temple', label: 'Temples', icon: '🛕' },
-    { value: 'lake', label: 'Lakes', icon: '🏞️' },
-    { value: 'monument', label: 'Monuments', icon: '🗿' },
-    { value: 'fort', label: 'Forts', icon: '🏰' },
-    { value: 'palace', label: 'Palaces', icon: '🏛️' },
-    { value: 'museum', label: 'Museums', icon: '🏛️' },
-    { value: 'natural_site', label: 'Natural Sites', icon: '🌿' },
-    { value: 'archaeological_site', label: 'Archaeological Sites', icon: '⛏️' },
-    { value: 'other', label: 'Other', icon: '📍' },
-  ];
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length + imageFiles.length > 5) {
+      toast.error('Maximum 5 images allowed');
+      return;
+    }
+    const newPreviews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews(prev => [...prev, ...newPreviews]);
+    setImageFiles(prev => [...prev, ...files]);
+  };
+
+  const removeImage = (index) => {
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleUploadSubmit = async (data) => {
     if (!isAuthenticated) {
@@ -75,46 +82,42 @@ const CareTheCulture = () => {
     }
 
     try {
-      const formData = {
-        ...data,
-        location: {
-          address: data.address,
-          city: data.city,
-          state: data.state,
-          country: data.country || 'India',
-          coordinates: {
-            latitude: parseFloat(data.latitude),
-            longitude: parseFloat(data.longitude),
-          },
-        },
-        history: {
-          established: data.established,
-          historicalSignificance: data.historicalSignificance,
-          architecture: data.architecture,
-          culturalImportance: data.culturalImportance,
-        },
-        visitorInfo: {
-          visitingHours: {
-            opening: data.openingTime,
-            closing: data.closingTime,
-            closedDays: data.closedDays ? data.closedDays.split(',').map(d => d.trim()) : [],
-          },
-          entryFee: {
-            adults: data.adultFee ? parseFloat(data.adultFee) : 0,
-            children: data.childFee ? parseFloat(data.childFee) : 0,
-            foreigners: data.foreignerFee ? parseFloat(data.foreignerFee) : 0,
-          },
-          bestTimeToVisit: data.bestTimeToVisit,
-          estimatedDuration: data.estimatedDuration,
-          facilities: data.facilities ? data.facilities.split(',').map(f => f.trim()) : [],
-        },
-        images: [], // Will be handled separately with image upload
-      };
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('description', data.description);
+      formData.append('category', data.category);
+      formData.append('location[address]', data.address);
+      formData.append('location[city]', data.city);
+      formData.append('location[state]', data.state);
+      formData.append('location[country]', data.country || 'India');
+      formData.append('location[coordinates][latitude]', data.latitude);
+      formData.append('location[coordinates][longitude]', data.longitude);
+      formData.append('location[coordinates][type]', 'Point');
+      formData.append('history[established]', data.established);
+      formData.append('history[historicalSignificance]', data.historicalSignificance);
+      if (data.architecture) formData.append('history[architecture]', data.architecture);
+      if (data.culturalImportance) formData.append('history[culturalImportance]', data.culturalImportance);
+      if (data.openingTime) formData.append('visitorInfo[visitingHours][opening]', data.openingTime);
+      if (data.closingTime) formData.append('visitorInfo[visitingHours][closing]', data.closingTime);
+      if (data.closedDays) formData.append('visitorInfo[visitingHours][closedDays]', data.closedDays);
+      if (data.adultFee) formData.append('visitorInfo[entryFee][adults]', data.adultFee);
+      if (data.childFee) formData.append('visitorInfo[entryFee][children]', data.childFee);
+      if (data.foreignerFee) formData.append('visitorInfo[entryFee][foreigners]', data.foreignerFee);
+      if (data.bestTimeToVisit) formData.append('visitorInfo[bestTimeToVisit]', data.bestTimeToVisit);
+      if (data.estimatedDuration) formData.append('visitorInfo[estimatedDuration]', data.estimatedDuration);
+      if (data.facilities) formData.append('visitorInfo[facilities]', data.facilities);
 
-      await heritage.create(formData);
+      // Append image files
+      imageFiles.forEach((file) => {
+        formData.append('images', file);
+      });
+
+      await heritage.createWithImages(formData);
       toast.success('Heritage site submitted successfully! It will be reviewed by our team.');
       reset();
       setShowUploadForm(false);
+      setImagePreviews([]);
+      setImageFiles([]);
       refetch();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to submit heritage site');
@@ -439,6 +442,47 @@ const CareTheCulture = () => {
                 </div>
               </div>
 
+              {/* Image Upload */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Images (Max 5)</h3>
+                <div
+                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary-500 transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <CloudArrowUpIcon className="w-10 h-10 mx-auto text-gray-400 mb-3" />
+                  <p className="text-gray-600 mb-1">Click to upload images</p>
+                  <p className="text-sm text-gray-400">JPG, PNG, WebP up to 5 images</p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    multiple
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </div>
+                {imagePreviews.length > 0 && (
+                  <div className="grid grid-cols-5 gap-3 mt-4">
+                    {imagePreviews.map((preview, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={preview}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-20 object-cover rounded-lg border border-gray-200"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <XMarkIcon className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               {/* Form Actions */}
               <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
                 <button
@@ -547,7 +591,7 @@ const CareTheCulture = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredSites.map((site) => (
-                  <div key={site._id} className="card group hover:scale-105 transition-transform duration-300">
+                  <div className="bg-secondary-50 border border-accent-500/20 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group hover:scale-105 transition-transform duration-300">
                     <div className="relative h-48 overflow-hidden">
                       <img
                         src={site.images?.[0]?.url || 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
@@ -565,9 +609,20 @@ const CareTheCulture = () => {
                           {site.category.replace('_', ' ')}
                         </span>
                       </div>
-                      {!site.verified && (
+                      {site.status === 'active' && (
+                        <div className="absolute bottom-4 left-4 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                          <ShieldCheckIcon className="w-4 h-4 mr-1" />
+                          Verified
+                        </div>
+                      )}
+                      {site.status === 'pending' && (
                         <div className="absolute bottom-4 left-4 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
                           Pending Review
+                        </div>
+                      )}
+                      {site.status === 'rejected' && (
+                        <div className="absolute bottom-4 left-4 bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
+                          Rejected
                         </div>
                       )}
                     </div>

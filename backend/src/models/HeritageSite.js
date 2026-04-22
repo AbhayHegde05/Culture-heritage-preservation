@@ -35,18 +35,34 @@ const heritageSiteSchema = new mongoose.Schema({
       default: 'India'
     },
     coordinates: {
-      latitude: {
-        type: Number,
-        required: [true, 'Latitude is required'],
-        min: -90,
-        max: 90
+      type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point'
       },
       longitude: {
         type: Number,
         required: [true, 'Longitude is required'],
         min: -180,
         max: 180
+      },
+      latitude: {
+        type: Number,
+        required: [true, 'Latitude is required'],
+        min: -90,
+        max: 90
       }
+    }
+  },
+  geoJson: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number],
+      default: [0, 0]
     }
   },
   history: {
@@ -155,8 +171,8 @@ const heritageSiteSchema = new mongoose.Schema({
   }],
   status: {
     type: String,
-    enum: ['active', 'pending', 'archived'],
-    default: 'active'
+    enum: ['pending', 'active', 'rejected'],
+    default: 'pending'
   },
   tags: [String],
   contributedBy: {
@@ -170,6 +186,9 @@ const heritageSiteSchema = new mongoose.Schema({
   verifiedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  verifiedAt: {
+    type: Date
   },
   createdAt: {
     type: Date,
@@ -192,8 +211,19 @@ heritageSiteSchema.index({
   tags: 'text'
 });
 
-// Geospatial index for location-based queries
-heritageSiteSchema.index({ 'location.coordinates': '2dsphere' });
+// Geospatial index for location-based queries (GeoJSON compliant)
+heritageSiteSchema.index({ geoJson: '2dsphere' });
+
+// Pre-save hook to sync geoJson from location.coordinates
+heritageSiteSchema.pre('save', function(next) {
+  if (this.location && this.location.coordinates) {
+    this.geoJson = {
+      type: 'Point',
+      coordinates: [this.location.coordinates.longitude, this.location.coordinates.latitude]
+    };
+  }
+  next();
+});
 
 // Update average rating when new review is added
 heritageSiteSchema.methods.updateAverageRating = function() {

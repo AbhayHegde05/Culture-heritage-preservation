@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from 'react-query';
 import {
   HeartIcon,
   UserGroupIcon,
@@ -13,35 +14,14 @@ import {
   MapPinIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
-import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { heritage } from '../services/api';
+import { teamMembers } from '../config/constants';
 
 const About = () => {
-  const teamMembers = [
-    {
-      name: 'Dr. Arun Sharma',
-      role: 'Executive Director',
-      bio: 'PhD in Indian Archaeology with 20+ years of experience in heritage preservation across India.',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      name: 'Priya Patel',
-      role: 'Technical Lead',
-      bio: 'Full-stack developer from IIT Bombay, specializing in digital heritage preservation platforms.',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b332c1ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      name: 'Dr. Lakshmi Iyer',
-      role: 'Cultural Advisor',
-      bio: 'Expert in Indian cultural anthropology and community heritage programs across rural India.',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      name: 'Prof. Vikram Reddy',
-      role: 'Research Director',
-      bio: 'Historian from JNU, focused on Indian temple architecture and documentation.',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    },
-  ];
+  // Fetch dynamic stats
+  const { data: stats } = useQuery('heritageStats', () => heritage.getStats(), {
+    staleTime: 10 * 60 * 1000,
+  });
 
   const values = [
     {
@@ -67,10 +47,10 @@ const About = () => {
   ];
 
   const achievements = [
-    { label: 'Indian Heritage Sites', value: '3,500+', icon: BuildingLibraryIcon },
-    { label: 'Active Contributors', value: '15,000+', icon: UserGroupIcon },
+    { label: 'Indian Heritage Sites', value: stats?.data?.totalVerified || 0, icon: BuildingLibraryIcon },
+    { label: 'Active Contributors', value: stats?.data?.totalContributors || 0, icon: UserGroupIcon },
     { label: 'States Covered', value: '28+', icon: GlobeAltIcon },
-    { label: 'Research Papers', value: '200+', icon: AcademicCapIcon },
+    { label: 'Categories', value: stats?.data?.categoryBreakdown?.length || 0, icon: AcademicCapIcon },
   ];
 
   const partners = [
@@ -101,43 +81,49 @@ const About = () => {
       </section>
 
       {/* Mission Section */}
-      <section id="mission" className="py-20 bg-white">
+      <section id="mission" className="py-20 bg-secondary-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Our mission is to create a comprehensive digital platform that preserves and showcases 
-                India's rich cultural heritage for future generations. We believe that by making heritage 
-                accessible, we can foster greater appreciation and understanding of our shared Indian history.
-              </p>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Through advanced technology, community collaboration, and partnerships with ASI and cultural 
-                institutions, we work tirelessly to document, protect, and promote India's most precious 
-                temples, forts, monuments, and traditions.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/care-the-culture" className="btn-primary inline-flex items-center justify-center">
-                  Explore Our Work
-                  <HeartIcon className="w-5 h-5 ml-2" />
-                </Link>
-                <Link to="/donate" className="btn-outline inline-flex items-center justify-center">
-                  Support Our Mission
-                </Link>
-              </div>
-            </div>
+          <div className="bg-parchment border-2 border-accent-500/30 rounded-2xl shadow-xl p-8 md:p-12 relative overflow-hidden">
+            {/* Gold decorative border */}
+            <div className="absolute inset-0 border-4 border-accent-500/20 rounded-2xl pointer-events-none"></div>
             <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Heritage preservation"
-                className="rounded-2xl shadow-2xl"
-              />
-              <div className="absolute -bottom-6 -left-6 bg-primary-600 text-white p-6 rounded-xl shadow-xl">
-                <div className="flex items-center space-x-3">
-                  <BuildingLibraryIcon className="w-8 h-8" />
-                  <div>
-                    <div className="text-2xl font-bold">3500+</div>
-                    <div className="text-primary-200">Indian Sites</div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                  <h2 className="text-4xl font-bold text-primary-800 mb-6 font-display">Our Mission</h2>
+                  <p className="text-lg text-charcoal mb-6 leading-relaxed serif">
+                    Our mission is to create a comprehensive digital platform that preserves and showcases
+                    India's rich cultural heritage for future generations. We believe that by making heritage
+                    accessible, we can foster greater appreciation and understanding of our shared Indian history.
+                  </p>
+                  <p className="text-lg text-charcoal mb-8 leading-relaxed serif">
+                    Through advanced technology, community collaboration, and partnerships with ASI and cultural
+                    institutions, we work tirelessly to document, protect, and promote India's most precious
+                    temples, forts, monuments, and traditions.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Link to="/care-the-culture" className="btn-royal inline-flex items-center justify-center">
+                      Explore Our Work
+                      <HeartIcon className="w-5 h-5 ml-2" />
+                    </Link>
+                    <Link to="/donate" className="btn-outline inline-flex items-center justify-center">
+                      Support Our Mission
+                    </Link>
+                  </div>
+                </div>
+                <div className="relative">
+                  <img
+                    src="https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                    alt="Heritage preservation"
+                    className="rounded-2xl shadow-2xl border-2 border-accent-500/20"
+                  />
+                  <div className="absolute -bottom-6 -left-6 bg-primary-800 text-white p-6 rounded-xl shadow-xl border-2 border-accent-500/30">
+                    <div className="flex items-center space-x-3">
+                      <BuildingLibraryIcon className="w-8 h-8 text-accent-500" />
+                      <div>
+                        <div className="text-2xl font-bold font-display">{stats?.data?.totalVerified || '0'}</div>
+                        <div className="text-accent-400">Indian Sites</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

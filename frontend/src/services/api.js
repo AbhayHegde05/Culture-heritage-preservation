@@ -56,10 +56,18 @@ export const heritage = {
   getAll: (params) => heritageAPI.get('/heritage', { params }),
   getById: (id) => heritageAPI.get(`/heritage/${id}`),
   create: (data) => heritageAPI.post('/heritage', data),
+  createWithImages: (formData) => heritageAPI.post('/heritage', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   update: (id, data) => heritageAPI.put(`/heritage/${id}`, data),
   delete: (id) => heritageAPI.delete(`/heritage/${id}`),
+  verify: (id) => heritageAPI.patch(`/heritage/${id}/verify`),
+  reject: (id) => heritageAPI.patch(`/heritage/${id}/reject`),
   addReview: (id, data) => heritageAPI.post(`/heritage/${id}/reviews`, data),
   getNearby: (params) => heritageAPI.get('/heritage/nearby', { params }),
+  getStats: () => heritageAPI.get('/heritage/stats'),
+  searchBounds: (params) => heritageAPI.get('/heritage/search-bounds', { params }),
+  externalSearch: (params) => heritageAPI.get('/heritage/external-search', { params }),
 };
 
 export const donations = {

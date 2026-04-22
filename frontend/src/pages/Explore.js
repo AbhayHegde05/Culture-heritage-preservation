@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { useForm } from 'react-hook-form';
 import {
   MagnifyingGlassIcon,
   MapPinIcon,
   StarIcon,
-  FunnelIcon,
   AdjustmentsHorizontalIcon,
   GlobeAltIcon,
   BuildingLibraryIcon,
   HeartIcon,
   ArrowRightIcon,
-  XMarkIcon,
-  ChevronDownIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { explore, heritage } from '../services/api';
+import { categories } from '../config/constants';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default markers in Leaflet
@@ -45,6 +44,25 @@ const MapController = ({ sites, userLocation }) => {
   return null;
 };
 
+// Search This Area button component
+const SearchThisAreaButton = ({ onSearchArea }) => {
+  const map = useMapEvents({
+    moveend: () => {
+      // Map moved, could trigger re-search
+    },
+  });
+
+  return (
+    <button
+      onClick={onSearchArea}
+      className="absolute top-3 left-1/2 -translate-x-1/2 z-[1000] bg-white text-primary-600 font-medium px-4 py-2 rounded-lg shadow-lg hover:bg-primary-50 transition-colors flex items-center space-x-2"
+    >
+      <MagnifyingGlassIcon className="w-4 h-4" />
+      <span>Search this area</span>
+    </button>
+  );
+};
+
 const Explore = () => {
   const [activeTab, setActiveTab] = useState('search');
   const [viewMode, setViewMode] = useState('grid'); // grid, map, list
@@ -52,6 +70,8 @@ const Explore = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [userLocation, setUserLocation] = useState(null);
   const [mapSites, setMapSites] = useState([]);
+  const [mapRef, setMapRef] = useState(null);
+  const [boundsSites, setBoundsSites] = useState([]);
 
   const {
     register,
@@ -80,19 +100,6 @@ const Explore = () => {
     }
   }, []);
 
-  // Categories
-  const categories = [
-    { value: 'all', label: 'All Categories', icon: '🏛️' },
-    { value: 'temple', label: 'Temples', icon: '🛕' },
-    { value: 'lake', label: 'Lakes', icon: '🏞️' },
-    { value: 'monument', label: 'Monuments', icon: '🗿' },
-    { value: 'fort', label: 'Forts', icon: '🏰' },
-    { value: 'palace', label: 'Palaces', icon: '🏛️' },
-    { value: 'museum', label: 'Museums', icon: '🏛️' },
-    { value: 'natural_site', label: 'Natural Sites', icon: '🌿' },
-    { value: 'archaeological_site', label: 'Archaeological Sites', icon: '⛏️' },
-    { value: 'other', label: 'Other', icon: '📍' },
-  ];
 
   // Search query
   const searchQuery = {
@@ -177,6 +184,26 @@ const Explore = () => {
     // Search is handled by the useQuery hook automatically when searchQuery changes
   };
 
+  // Handle search this area on map
+  const handleSearchArea = useCallback(async () => {
+    if (!mapRef) return;
+    const bounds = mapRef.getBounds();
+    const southWest = bounds.getSouthWest();
+    const northEast = bounds.getNorthEast();
+    try {
+      const res = await heritage.searchBounds({
+        southWestLng: southWest.lng,
+        southWestLat: southWest.lat,
+        northEastLng: northEast.lng,
+        northEastLat: northEast.lat,
+      });
+      setBoundsSites(res.data.data || []);
+      setMapSites(res.data.data || []);
+    } catch (err) {
+      // Silently handle
+    }
+  }, [mapRef]);
+
   // Update map sites when data changes
   useEffect(() => {
     if (currentData && viewMode === 'map') {
@@ -185,7 +212,7 @@ const Explore = () => {
   }, [currentData, viewMode]);
 
   const SiteCard = ({ site }) => (
-    <div className="card group hover:scale-105 transition-transform duration-300">
+    <div className="bg-secondary-50 border border-accent-500/20 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group hover:scale-105 transition-transform duration-300">
       <div className="relative h-48 overflow-hidden">
         <img
           src={site.images?.[0]?.url || 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
@@ -198,10 +225,16 @@ const Explore = () => {
             <span className="text-sm font-medium">{site.ratings.average.toFixed(1)}</span>
           </div>
         </div>
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-4 left-4 flex items-center gap-2">
           <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium capitalize">
             {site.category.replace('_', ' ')}
           </span>
+          {site.verified && (
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center">
+              <ShieldCheckIcon className="w-3 h-3 mr-1" />
+              Verified
+            </span>
+          )}
         </div>
         {site.distance && (
           <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
@@ -240,7 +273,7 @@ const Explore = () => {
   );
 
   const SiteListItem = ({ site }) => (
-    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-secondary-50 border border-accent-500/20 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300">
       <div className="flex flex-col md:flex-row gap-6">
         <div className="md:w-48 h-32 md:h-auto overflow-hidden rounded-lg">
           <img
@@ -256,6 +289,12 @@ const Explore = () => {
                 <span className="bg-primary-100 text-primary-600 px-2 py-1 rounded-full text-xs font-medium capitalize">
                   {site.category.replace('_', ' ')}
                 </span>
+                {site.status === 'active' && (
+                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium flex items-center">
+                    <ShieldCheckIcon className="w-3 h-3 mr-1" />
+                    Verified
+                  </span>
+                )}
                 <div className="flex items-center space-x-1 text-sm text-gray-500">
                   <StarIconSolid className="w-4 h-4 text-yellow-500" />
                   <span>{site.ratings.average.toFixed(1)}</span>
@@ -492,18 +531,20 @@ const Explore = () => {
 
           {/* Map View */}
           {viewMode === 'map' && !loading && currentData && currentData.length > 0 && (
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8 relative">
               <div className="h-96 lg:h-[600px]">
                 <MapContainer
                   center={[20.5937, 78.9629]} // Center of India
                   zoom={5}
                   style={{ height: '100%', width: '100%' }}
+                  whenCreated={(map) => setMapRef(map)}
                 >
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
                   <MapController sites={mapSites} userLocation={userLocation} />
+                  <SearchThisAreaButton onSearchArea={handleSearchArea} />
                   {mapSites.map((site) => (
                     <Marker
                       key={site._id}

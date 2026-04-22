@@ -98,7 +98,6 @@ exports.processDonation = async (req, res, next) => {
     // Send confirmation notification (Twilio integration can be added here)
     if (paymentStatus === 'completed') {
       // TODO: Send SMS/Email confirmation
-      console.log(`Donation confirmation sent to user ${req.user.id}`);
     }
 
     res.status(201).json({

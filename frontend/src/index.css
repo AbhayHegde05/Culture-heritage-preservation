@@ -2,22 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
 
 @layer base {
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
-    font-family: 'Cormorant Garamond', serif;
+    font-family: 'Lora', serif;
     background-color: #fff9f0;
     color: #2d2d3a;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cinzel', serif;
-    color: #b91c1c;
+    font-family: 'Playfair Display', serif;
+    color: #991b1b;
     letter-spacing: 0.02em;
   }
 }
@@ -27,26 +27,38 @@
     @apply text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg font-sans tracking-wide;
     background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
   }
-  
+
   .btn-primary:hover {
     background: linear-gradient(135deg, #c2410c 0%, #9a3412 100%);
   }
-  
+
   .btn-secondary {
     @apply bg-secondary-500 hover:bg-secondary-700 text-white font-medium py-2 px-6 rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg font-sans tracking-wide;
     background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
   }
-  
+
   .btn-outline {
     @apply font-medium py-2 px-6 rounded-lg transition-all duration-200 font-sans tracking-wide;
     border: 2px solid #ea580c;
     color: #c2410c;
     background: transparent;
   }
-  
+
   .btn-outline:hover {
     background: #ea580c;
     color: white;
+  }
+
+  .btn-royal {
+    @apply text-white font-medium py-2 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg;
+    font-family: 'Playfair Display', serif;
+    background: #991b1b;
+    border: 2px solid #b45309;
+  }
+
+  .btn-royal:hover {
+    background: #7f1d1d;
+    border-color: #92400e;
   }
   
   .card {
