@@ -18,27 +18,27 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 const About = () => {
   const teamMembers = [
     {
-      name: 'Dr. Sarah Johnson',
+      name: 'Dr. Arun Sharma',
       role: 'Executive Director',
-      bio: 'PhD in Archaeology with 15+ years of experience in heritage preservation.',
-      image: 'https://images.unsplash.com/photo-1494790108755-2616b332c1ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-    },
-    {
-      name: 'Raj Patel',
-      role: 'Technical Lead',
-      bio: 'Full-stack developer specializing in digital heritage preservation platforms.',
+      bio: 'PhD in Indian Archaeology with 20+ years of experience in heritage preservation across India.',
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
     },
     {
-      name: 'Maria Garcia',
+      name: 'Priya Patel',
+      role: 'Technical Lead',
+      bio: 'Full-stack developer from IIT Bombay, specializing in digital heritage preservation platforms.',
+      image: 'https://images.unsplash.com/photo-1494790108755-2616b332c1ca?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    },
+    {
+      name: 'Dr. Lakshmi Iyer',
       role: 'Cultural Advisor',
-      bio: 'Expert in cultural anthropology and community heritage programs.',
+      bio: 'Expert in Indian cultural anthropology and community heritage programs across rural India.',
       image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
     },
     {
-      name: 'Dr. Wei Chen',
+      name: 'Prof. Vikram Reddy',
       role: 'Research Director',
-      bio: 'Historian and researcher focused on Asian heritage documentation.',
+      bio: 'Historian from JNU, focused on Indian temple architecture and documentation.',
       image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
     },
   ];
@@ -61,16 +61,16 @@ const About = () => {
     },
     {
       icon: GlobeAltIcon,
-      title: 'Global Impact',
-      description: 'Connecting people worldwide through shared cultural heritage and history.',
+      title: 'National Reach',
+      description: 'Connecting Indians from Kashmir to Kanyakumari through shared cultural heritage.',
     },
   ];
 
   const achievements = [
-    { label: 'Heritage Sites Documented', value: '2,500+', icon: BuildingLibraryIcon },
-    { label: 'Active Contributors', value: '10,000+', icon: UserGroupIcon },
-    { label: 'Countries Covered', value: '45+', icon: GlobeAltIcon },
-    { label: 'Research Papers Published', value: '150+', icon: AcademicCapIcon },
+    { label: 'Indian Heritage Sites', value: '3,500+', icon: BuildingLibraryIcon },
+    { label: 'Active Contributors', value: '15,000+', icon: UserGroupIcon },
+    { label: 'States Covered', value: '28+', icon: GlobeAltIcon },
+    { label: 'Research Papers', value: '200+', icon: AcademicCapIcon },
   ];
 
   const partners = [
@@ -90,11 +90,11 @@ const About = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              About Culture Heritage Preservation
+              Preserving India's Cultural Heritage
             </h1>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto text-primary-100">
-              We are dedicated to preserving, documenting, and sharing the world's cultural heritage 
-              through innovative digital solutions and community engagement.
+              We are dedicated to preserving, documenting, and sharing India's magnificent cultural 
+              heritage through innovative digital solutions and community engagement.
             </p>
           </div>
         </div>
@@ -108,12 +108,13 @@ const About = () => {
               <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
               <p className="text-lg text-gray-600 mb-6 leading-relaxed">
                 Our mission is to create a comprehensive digital platform that preserves and showcases 
-                cultural heritage sites for future generations. We believe that by making heritage 
-                accessible, we can foster greater appreciation and understanding of our shared human history.
+                India's rich cultural heritage for future generations. We believe that by making heritage 
+                accessible, we can foster greater appreciation and understanding of our shared Indian history.
               </p>
               <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                Through advanced technology, community collaboration, and expert partnerships, we work 
-                tirelessly to document, protect, and promote the world's most precious cultural treasures.
+                Through advanced technology, community collaboration, and partnerships with ASI and cultural 
+                institutions, we work tirelessly to document, protect, and promote India's most precious 
+                temples, forts, monuments, and traditions.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/care-the-culture" className="btn-primary inline-flex items-center justify-center">
@@ -135,8 +136,8 @@ const About = () => {
                 <div className="flex items-center space-x-3">
                   <BuildingLibraryIcon className="w-8 h-8" />
                   <div>
-                    <div className="text-2xl font-bold">2500+</div>
-                    <div className="text-primary-200">Sites Preserved</div>
+                    <div className="text-2xl font-bold">3500+</div>
+                    <div className="text-primary-200">Indian Sites</div>
                   </div>
                 </div>
               </div>

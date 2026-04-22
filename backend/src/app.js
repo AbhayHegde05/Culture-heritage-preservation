@@ -15,6 +15,7 @@ const auth = require('./routes/auth');
 const heritage = require('./routes/heritage');
 const donations = require('./routes/donations');
 const explore = require('./routes/explore');
+const googleAuth = require('./routes/googleAuth');
 
 // Connect to database
 connectDB();
@@ -57,6 +58,7 @@ app.use('/api/auth', auth);
 app.use('/api/heritage', heritage);
 app.use('/api/donations', donations);
 app.use('/api/explore', explore);
+app.use('/api/auth/google', googleAuth);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

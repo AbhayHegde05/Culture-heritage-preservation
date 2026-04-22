@@ -44,26 +44,26 @@ const Home = () => {
     }
   );
 
-  // Hero slider data
+  // Hero slider data - Indian Heritage Focus
   const heroSlides = [
     {
-      title: 'Discover Ancient Temples',
-      description: 'Explore the magnificent architecture and spiritual significance of centuries-old temples.',
-      image: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-      cta: 'Explore Temples',
+      title: 'Taj Mahal - Symbol of Eternal Love',
+      description: 'Explore the crown jewel of Indian architecture, a UNESCO World Heritage site and testament to eternal love.',
+      image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+      cta: 'Explore Taj Mahal',
       link: '/explore?category=temple',
     },
     {
-      title: 'Serene Heritage Lakes',
-      description: 'Experience the tranquility and historical importance of sacred lakes and water bodies.',
-      image: 'https://images.unsplash.com/photo-1540206395-68808572332f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-      cta: 'Discover Lakes',
+      title: 'Varanasi - The Spiritual Capital',
+      description: 'Experience the ancient ghats and spiritual aura of India\'s holiest city on the banks of the sacred Ganges.',
+      image: 'https://images.unsplash.com/photo-1561361058-4f4f93480940?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+      cta: 'Discover Varanasi',
       link: '/explore?category=lake',
     },
     {
-      title: 'Majestic Forts & Palaces',
-      description: 'Step back in time and witness the grandeur of royal forts and palaces.',
-      image: 'https://images.unsplash.com/photo-1528722828814-77b9b83aafb2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+      title: 'Amer Fort - Rajasthan\'s Royal Glory',
+      description: 'Step back in time and witness the grandeur of Rajasthan\'s majestic hill forts and palaces.',
+      image: 'https://images.unsplash.com/photo-1595658658481-d53d3f999875?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
       cta: 'View Forts',
       link: '/explore?category=fort',
     },
@@ -137,7 +137,7 @@ const Home = () => {
             <h1 className="text-4xl md:text-6xl font-bold mb-6 animate-fade-in">
               {heroSlides[currentSlide].title}
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-slide-up">
+            <p className="text-xl md:text-2xl mb-8 animate-slide-up" style={{ color: '#ffedd5' }}>
               {heroSlides[currentSlide].description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
@@ -150,7 +150,7 @@ const Home = () => {
               </Link>
               <Link
                 to="/about"
-                className="btn-outline text-lg px-8 py-4 inline-flex items-center justify-center border-white text-white hover:bg-white hover:text-gray-900"
+                className="btn-outline text-lg px-8 py-4 inline-flex items-center justify-center" style={{ borderColor: '#ffedd5', color: '#ffedd5' }}
               >
                 Learn More
               </Link>
@@ -173,16 +173,16 @@ const Home = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-primary-600 text-white">
+      <section className="py-16" style={{ background: 'linear-gradient(135deg, #b91c1c, #ea580c)', color: '#fff9f0' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {statsData.map((stat, index) => {
               const Icon = stat.icon;
               return (
                 <div key={index} className="text-center">
-                  <Icon className="w-12 h-12 mx-auto mb-4 text-primary-200" />
+                  <Icon className="w-12 h-12 mx-auto mb-4" style={{ color: '#fdba74' }} />
                   <div className="text-3xl md:text-4xl font-bold mb-2">{stat.value}</div>
-                  <div className="text-primary-200">{stat.label}</div>
+                  <div style={{ color: '#ffedd5' }}>{stat.label}</div>
                 </div>
               );
             })}
@@ -191,14 +191,14 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20" style={{ backgroundColor: '#fff9f0' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Choose Culture Heritage
+            <h2 className="text-4xl font-display font-bold text-secondary-800 mb-4">
+              Discover India\'s Rich Heritage
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Discover the perfect platform to explore, learn, and contribute to preserving our rich cultural heritage.
+            <p className="text-xl text-secondary-600 max-w-3xl mx-auto font-serif">
+              Explore the land of ancient traditions, magnificent architecture, and diverse cultural treasures that span millennia.
             </p>
           </div>
 
@@ -207,13 +207,13 @@ const Home = () => {
               const Icon = feature.icon;
               return (
                 <div key={index} className="text-center group">
-                  <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary-600 transition-colors duration-300">
-                    <Icon className="w-8 h-8 text-primary-600 group-hover:text-white transition-colors duration-300" />
+                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors duration-300 shadow-inner" style={{ backgroundColor: '#ffedd5' }}>
+                    <Icon className="w-8 h-8 group-hover:text-white transition-colors duration-300" style={{ color: '#ea580c' }} />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                  <h3 className="text-xl font-display font-semibold text-secondary-800 mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="text-secondary-600 leading-relaxed font-serif">
                     {feature.description}
                   </p>
                 </div>
@@ -224,14 +224,14 @@ const Home = () => {
       </section>
 
       {/* Featured Sites Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20" style={{ backgroundColor: '#ffedd5' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Featured Heritage Sites
+            <h2 className="text-4xl font-display font-bold text-secondary-800 mb-4">
+              Featured Indian Heritage Sites
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Explore some of the most remarkable heritage sites from our collection.
+            <p className="text-xl text-secondary-600 max-w-3xl mx-auto font-serif">
+              Discover India\'s UNESCO World Heritage Sites and architectural wonders from Kashmir to Kanyakumari.
             </p>
           </div>
 
@@ -239,11 +239,11 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[...Array(6)].map((_, index) => (
                 <div key={index} className="card animate-pulse">
-                  <div className="h-48 bg-gray-200"></div>
+                  <div className="h-48 bg-secondary-200"></div>
                   <div className="p-6">
-                    <div className="h-6 bg-gray-200 rounded mb-3"></div>
-                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-6 bg-secondary-200 rounded mb-3"></div>
+                    <div className="h-4 bg-secondary-200 rounded mb-2"></div>
+                    <div className="h-4 bg-secondary-200 rounded w-3/4"></div>
                   </div>
                 </div>
               ))}
@@ -258,7 +258,7 @@ const Home = () => {
                       alt={site.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
+                    <div className="absolute top-4 right-4 backdrop-blur-sm px-3 py-1 rounded-full border" style={{ backgroundColor: 'rgba(255, 249, 240, 0.9)', borderColor: '#fdba74' }}>
                       <div className="flex items-center space-x-1">
                         <StarIconSolid className="w-4 h-4 text-yellow-500" />
                         <span className="text-sm font-medium">{site.ratings.average.toFixed(1)}</span>
@@ -267,23 +267,23 @@ const Home = () => {
                   </div>
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-primary-600 font-medium capitalize">
+                      <span className="text-sm font-medium font-sans capitalize" style={{ color: '#c2410c' }}>
                         {site.category.replace('_', ' ')}
                       </span>
-                      <div className="flex items-center text-gray-500 text-sm">
+                      <div className="flex items-center text-secondary-500 text-sm font-sans">
                         <MapPinIcon className="w-4 h-4 mr-1" />
                         {site.location.city}
                       </div>
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                    <h3 className="text-xl font-display font-semibold text-secondary-800 mb-2 transition-colors" style={{ color: '#2d2d3a' }}>
                       {site.name}
                     </h3>
-                    <p className="text-gray-600 mb-4 line-clamp-2">
+                    <p className="text-secondary-600 mb-4 line-clamp-2 font-serif leading-relaxed">
                       {site.description}
                     </p>
                     <Link
                       to={`/heritage/${site._id}`}
-                      className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+                      className="inline-flex items-center font-medium font-sans" style={{ color: '#ea580c' }}
                     >
                       Explore Site
                       <ArrowRightIcon className="w-4 h-4 ml-1" />
@@ -292,7 +292,7 @@ const Home = () => {
                 </div>
               )) : (
                 <div className="text-center py-12">
-                  <p className="text-gray-600">No heritage sites available at the moment.</p>
+                  <p className="text-secondary-600 font-serif">No heritage sites available at the moment.</p>
                 </div>
               )}
             </div>
@@ -308,26 +308,26 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-accent-500 text-white">
+      <section className="py-20" style={{ background: 'linear-gradient(135deg, #15803d, #16a34a)', color: '#fff9f0' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Help Preserve Our Cultural Heritage
+          <h2 className="text-4xl font-display font-bold mb-6">
+            Preserve India\'s Cultural Heritage
           </h2>
-          <p className="text-xl mb-8 text-primary-100">
-            Join us in our mission to protect and share the world's cultural treasures. 
-            Your contribution makes a real difference.
+          <p className="text-xl mb-8 font-serif leading-relaxed" style={{ color: '#ffedd5' }}>
+            Join us in protecting India\'s timeless treasures for future generations. 
+            Your contribution helps safeguard our shared heritage.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/donate"
-              className="bg-white text-primary-600 hover:bg-gray-100 font-bold py-4 px-8 rounded-lg text-lg transition-colors duration-200 inline-flex items-center justify-center"
+              className="hover:bg-white font-bold font-sans py-4 px-8 rounded-lg text-lg transition-colors duration-200 inline-flex items-center justify-center shadow-lg" style={{ backgroundColor: '#fff9f0', color: '#b91c1c' }}
             >
               Make a Donation
               <HeartIcon className="w-5 h-5 ml-2" />
             </Link>
             <Link
               to="/care-the-culture"
-              className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 inline-flex items-center justify-center"
+              className="font-bold font-sans py-4 px-8 rounded-lg text-lg transition-all duration-200 inline-flex items-center justify-center" style={{ border: '2px solid #ffedd5', color: '#ffedd5' }}
             >
               Contribute Information
               <PlayIcon className="w-5 h-5 ml-2" />

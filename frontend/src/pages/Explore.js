@@ -107,7 +107,7 @@ const Explore = () => {
   };
 
   // Fetch search results
-  const { data: searchSites } = useQuery(
+  const { data: searchSites, isLoading: searchLoading } = useQuery(
     ['searchSites', searchQuery],
     () => explore.search(searchQuery),
     {

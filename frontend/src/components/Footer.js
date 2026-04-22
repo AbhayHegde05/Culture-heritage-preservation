@@ -52,15 +52,15 @@ const Footer = () => {
                 <HeartIcon className="w-7 h-7 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Culture Heritage</h3>
-                <p className="text-sm text-gray-400">Preserving Our Past, Enriching Our Future</p>
+                <h3 className="text-xl font-bold">Indian Heritage</h3>
+                <p className="text-sm text-gray-400">Preserving India's Past, Enriching Our Future</p>
               </div>
             </div>
             
             <p className="text-gray-300 mb-6 leading-relaxed">
-              We are dedicated to preserving and showcasing the rich cultural heritage sites 
-              across the world. Through digital technology, we make it possible for everyone 
-              to explore and learn about our precious historical treasures.
+              We are dedicated to preserving and showcasing India's rich cultural heritage 
+              sites from the Himalayas to the Indian Ocean. Explore ancient temples, majestic 
+              forts, and timeless traditions that define our incredible nation.
             </p>
             
             {/* Contact Information */}
@@ -75,7 +75,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2 text-gray-300">
                 <MapPinIcon className="w-4 h-4" />
-                <span className="text-sm">123 Heritage Street, Cultural District</span>
+                <span className="text-sm">New Delhi, India</span>
               </div>
             </div>
           </div>
