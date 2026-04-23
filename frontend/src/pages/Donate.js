@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useQuery } from 'react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -18,299 +16,166 @@ import {
 import { donations, heritage } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
-// Load Stripe
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+const UPI_ID = 'heritage.india@upi';
+const UPI_NAME = 'Indian Heritage Preservation';
 
-// Donation Form Component
+// UPI Donation Form Component
 const DonationForm = ({ selectedSite, onDonationSuccess }) => {
   const { user } = useAuth();
-  const stripe = useStripe();
-  const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [donationAmount, setDonationAmount] = useState('');
   const [customAmount, setCustomAmount] = useState('');
   const [donationType, setDonationType] = useState('general');
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [step, setStep] = useState('form'); // 'form' | 'upi'
+  const [utrNumber, setUtrNumber] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
   const predefinedAmounts = [500, 1000, 2500, 5000, 10000];
+  const finalAmount = customAmount || donationAmount;
 
-  const handleAmountSelect = (amount) => {
-    setDonationAmount(amount);
-    setCustomAmount('');
+  const getQrUrl = () => {
+    const upiStr = `upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(UPI_NAME)}&am=${finalAmount}&cu=INR&tn=HeritageDonation`;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiStr)}&bgcolor=FFFFF0&color=580000`;
   };
 
-  const handleCustomAmount = (amount) => {
-    setCustomAmount(amount);
-    setDonationAmount('');
+  const handleAmountSelect = (amount) => { setDonationAmount(amount); setCustomAmount(''); };
+  const handleCustomAmount = (val) => { setCustomAmount(val); setDonationAmount(''); };
+
+  const handleProceed = () => {
+    if (!finalAmount || parseFloat(finalAmount) < 1) { toast.error('Please select or enter a donation amount'); return; }
+    setStep('upi');
   };
 
-  const onSubmit = async (data) => {
-    if (!stripe || !elements) {
-      return;
-    }
-
-    const finalAmount = customAmount || donationAmount;
-    if (!finalAmount || parseFloat(finalAmount) < 1) {
-      toast.error('Please enter a valid donation amount');
-      return;
-    }
-
+  const handleConfirmPayment = async () => {
+    if (!utrNumber.trim() || utrNumber.trim().length < 6) { toast.error('Please enter a valid UTR / Transaction Reference Number'); return; }
     setIsProcessing(true);
-
     try {
-      // Create payment intent
-      const response = await donations.createPaymentIntent({
-        amount: parseFloat(finalAmount),
-        currency: 'INR',
+      await donations.processDonation({
+        amount: parseFloat(finalAmount), currency: 'INR', paymentMethod: 'upi',
+        paymentId: `UTR_${utrNumber.trim()}`, donationType,
+        heritageSite: selectedSite?._id, isAnonymous,
       });
-
-      const { clientSecret, paymentIntentId } = response.data;
-
-      // Confirm payment
-      const { error: paymentError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement),
-          billing_details: {
-            name: user?.name || data.name,
-            email: user?.email || data.email,
-          },
-        },
-      });
-
-      if (paymentError) {
-        toast.error(paymentError.message);
-      } else if (paymentIntent.status === 'succeeded') {
-        // Process donation
-        await donations.processDonation({
-          amount: parseFloat(finalAmount),
-          currency: 'INR',
-          paymentMethod: 'card',
-          paymentId: paymentIntentId,
-          donationType,
-          heritageSite: selectedSite?._id,
-          isAnonymous,
-          message: data.message,
-        });
-
-        toast.success('Thank you for your generous donation!');
-        reset();
-        setDonationAmount('');
-        setCustomAmount('');
-        onDonationSuccess();
-      }
+      toast.success('🙏 Thank you for your generous donation!');
+      reset(); setDonationAmount(''); setCustomAmount(''); setUtrNumber(''); setStep('form');
+      onDonationSuccess();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Donation failed. Please try again.');
-    } finally {
-      setIsProcessing(false);
-    }
+    } finally { setIsProcessing(false); }
   };
 
+  const upiApps = [
+    { name: 'Google Pay', color: '#4285F4', emoji: '🔵' },
+    { name: 'PhonePe', color: '#5f259f', emoji: '🟣' },
+    { name: 'Paytm', color: '#00BAF2', emoji: '🔷' },
+    { name: 'BHIM UPI', color: '#00538C', emoji: '🏛️' },
+  ];
+
+  if (step === 'upi') {
+    return (
+      <div className="space-y-5">
+        <div className="text-center pb-3 border-b border-gray-100">
+          <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Complete Payment</p>
+          <p className="text-2xl font-bold" style={{ color: '#580000' }}>₹{finalAmount}</p>
+        </div>
+        <div className="flex justify-center">
+          <div className="p-3 bg-amber-50 border-2 border-amber-200 rounded-xl">
+            <img src={getQrUrl()} alt="UPI QR Code" className="w-48 h-48" />
+          </div>
+        </div>
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center">
+          <p className="text-xs text-gray-500 mb-1">UPI ID</p>
+          <div className="flex items-center justify-center gap-2">
+            <code className="text-base font-bold" style={{ color: '#580000' }}>{UPI_ID}</code>
+            <button onClick={() => { navigator.clipboard.writeText(UPI_ID); toast.success('Copied!'); }}
+              className="text-xs bg-amber-600 text-white px-2 py-0.5 rounded">Copy</button>
+          </div>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+          {upiApps.map(app => (
+            <div key={app.name} className="flex flex-col items-center p-2 border border-gray-200 rounded-lg text-center text-xs">
+              <span className="text-2xl mb-1">{app.emoji}</span>
+              <span className="font-medium text-gray-700">{app.name}</span>
+            </div>
+          ))}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">UTR / Transaction Reference *</label>
+          <input type="text" value={utrNumber} onChange={e => setUtrNumber(e.target.value)}
+            placeholder="Enter UTR number after paying" className="input-field" />
+          <p className="text-xs text-gray-400 mt-1">Find the UTR in your UPI app's transaction history</p>
+        </div>
+        <div className="flex gap-3">
+          <button type="button" onClick={() => setStep('form')}
+            className="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg hover:bg-gray-50">← Back</button>
+          <button type="button" onClick={handleConfirmPayment} disabled={isProcessing}
+            className="flex-1 btn-primary py-3 disabled:opacity-50">
+            {isProcessing ? 'Processing...' : 'Confirm Payment'}
+          </button>
+        </div>
+        <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+          <ShieldCheckIcon className="w-4 h-4" />
+          <span>Secure UPI Payment</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Donation Type */}
+    <form onSubmit={handleSubmit(handleProceed)} className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Donation Type
-        </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setDonationType('general')}
+        <label className="block text-sm font-medium text-gray-700 mb-3">Donation Type</label>
+        <div className="grid grid-cols-2 gap-3">
+          <button type="button" onClick={() => setDonationType('general')}
             className={`p-4 border-2 rounded-lg text-left transition-all ${
-              donationType === 'general'
-                ? 'border-primary-600 bg-primary-50'
-                : 'border-gray-300 hover:border-gray-400'
-            }`}
-          >
+              donationType === 'general' ? 'border-primary-600 bg-primary-50' : 'border-gray-300 hover:border-gray-400'}`}>
             <div className="flex items-center space-x-3">
               <GlobeAltIcon className="w-6 h-6 text-primary-600" />
-              <div>
-                <div className="font-medium">General Fund</div>
-                <div className="text-sm text-gray-600">Support overall preservation efforts</div>
-              </div>
+              <div><div className="font-medium">General Fund</div><div className="text-sm text-gray-600">Support overall preservation</div></div>
             </div>
           </button>
-
-          <button
-            type="button"
-            onClick={() => setDonationType('site_specific')}
+          <button type="button" onClick={() => setDonationType('site_specific')} disabled={!selectedSite}
             className={`p-4 border-2 rounded-lg text-left transition-all ${
-              donationType === 'site_specific'
-                ? 'border-primary-600 bg-primary-50'
-                : 'border-gray-300 hover:border-gray-400'
-            } ${!selectedSite ? 'opacity-50 cursor-not-allowed' : ''}`}
-            disabled={!selectedSite}
-          >
+              donationType === 'site_specific' ? 'border-primary-600 bg-primary-50' : 'border-gray-300 hover:border-gray-400'
+            } ${!selectedSite ? 'opacity-50 cursor-not-allowed' : ''}`}>
             <div className="flex items-center space-x-3">
               <BuildingLibraryIcon className="w-6 h-6 text-primary-600" />
-              <div>
-                <div className="font-medium">Site Specific</div>
-                <div className="text-sm text-gray-600">
-                  {selectedSite ? selectedSite.name : 'Select a heritage site'}
-                </div>
-              </div>
+              <div><div className="font-medium">Site Specific</div><div className="text-sm text-gray-600">{selectedSite ? selectedSite.name : 'Select a site below'}</div></div>
             </div>
           </button>
         </div>
       </div>
-
-      {/* Donation Amount */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Select Amount (INR)
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-3">Select Amount (INR)</label>
         <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-4">
           {predefinedAmounts.map((amount) => (
-            <button
-              key={amount}
-              type="button"
-              onClick={() => handleAmountSelect(amount)}
+            <button key={amount} type="button" onClick={() => handleAmountSelect(amount)}
               className={`py-3 px-4 border-2 rounded-lg font-medium transition-all ${
-                donationAmount === amount
-                  ? 'border-primary-600 bg-primary-600 text-white'
-                  : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
+                donationAmount === amount ? 'border-primary-600 bg-primary-600 text-white' : 'border-gray-300 hover:border-gray-400'}`}>
               ₹{amount}
             </button>
           ))}
         </div>
-
         <div className="relative">
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
-            ₹
-          </span>
-          <input
-            type="number"
-            placeholder="Enter custom amount"
-            value={customAmount}
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
+          <input type="number" placeholder="Enter custom amount" value={customAmount}
             onChange={(e) => handleCustomAmount(e.target.value)}
-            className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-            min="1"
-          />
+            className="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-primary-500" min="1" />
         </div>
       </div>
-
-      {/* Personal Information (for non-logged in users) */}
-      {!user && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name *
-            </label>
-            <input
-              {...register('name', { required: 'Name is required' })}
-              className="input-field"
-              placeholder="Enter your full name"
-            />
-            {errors.name && (
-              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address *
-            </label>
-            <input
-              {...register('email', { 
-                required: 'Email is required',
-                pattern: {
-                  value: /^\S+@\S+$/i,
-                  message: 'Invalid email address'
-                }
-              })}
-              type="email"
-              className="input-field"
-              placeholder="Enter your email"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Payment Information */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Card Information *
-        </label>
-        <div className="p-4 border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-primary-500 focus-within:border-transparent">
-          <CardElement
-            options={{
-              style: {
-                base: {
-                  fontSize: '16px',
-                  color: '#424770',
-                  '::placeholder': {
-                    color: '#aab7c4',
-                  },
-                },
-              },
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Anonymous Donation */}
       <div className="flex items-center space-x-3">
-        <input
-          type="checkbox"
-          id="anonymous"
-          checked={isAnonymous}
-          onChange={(e) => setIsAnonymous(e.target.checked)}
-          className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-        />
-        <label htmlFor="anonymous" className="text-sm text-gray-700">
-          Make this donation anonymous
-        </label>
+        <input type="checkbox" id="anonymous" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)}
+          className="w-4 h-4 text-primary-600 border-gray-300 rounded" />
+        <label htmlFor="anonymous" className="text-sm text-gray-700">Make this donation anonymous</label>
       </div>
-
-      {/* Message (Optional) */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Message (Optional)
-        </label>
-        <textarea
-          {...register('message')}
-          rows={3}
-          className="input-field"
-          placeholder="Share why you're supporting heritage preservation..."
-          maxLength={500}
-        />
-      </div>
-
-      {/* Submit Button */}
-      <button
-        type="submit"
-        disabled={isProcessing || (!donationAmount && !customAmount)}
-        className="w-full btn-primary py-4 text-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-      >
-        {isProcessing ? (
-          <>
-            <div className="loading-spinner w-5 h-5 mr-2"></div>
-            Processing...
-          </>
-        ) : (
-          <>
-            <HeartIcon className="w-5 h-5 mr-2" />
-            Donate ₹{customAmount || donationAmount || '0'}
-          </>
-        )}
+      <button type="submit" disabled={!donationAmount && !customAmount}
+        className="w-full btn-primary py-4 text-lg font-medium disabled:opacity-50 flex items-center justify-center">
+        <HeartIcon className="w-5 h-5 mr-2" />
+        Proceed to Pay ₹{finalAmount || '0'} via UPI
       </button>
-
-      {/* Security Note */}
-      <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+      <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
         <ShieldCheckIcon className="w-4 h-4" />
-        <span>Secure payment powered by Stripe</span>
+        <span>Secure UPI Payment — GPay · PhonePe · Paytm · BHIM</span>
       </div>
     </form>
   );
@@ -389,7 +254,7 @@ const Donate = () => {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-4xl md:text-5xl font-bold mb-6" style={{ color: '#D4AF37', fontFamily: "'Playfair Display', serif" }}>
               Support Heritage Preservation
             </h1>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto text-primary-100 mb-8">
@@ -487,12 +352,10 @@ const Donate = () => {
               </select>
             </div>
 
-            <Elements stripe={stripePromise}>
-              <DonationForm 
-                selectedSite={selectedSite} 
-                onDonationSuccess={handleDonationSuccess}
-              />
-            </Elements>
+            <DonationForm
+              selectedSite={selectedSite}
+              onDonationSuccess={handleDonationSuccess}
+            />
           </div>
         </div>
       </section>

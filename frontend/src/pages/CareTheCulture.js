@@ -8,7 +8,6 @@ import {
   MapPinIcon,
   PlusIcon,
   MagnifyingGlassIcon,
-  FunnelIcon,
   ArrowRightIcon,
   CloudArrowUpIcon,
   XMarkIcon,
@@ -20,12 +19,19 @@ import { heritage, explore } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { categories } from '../config/constants';
 
+// ── Gold Verified Badge ──────────────────────────────────────────────────────
+const GoldVerifiedBadge = () => (
+  <span className="gold-verified-badge">
+    <ShieldCheckIcon style={{ width: 12, height: 12 }} />
+    Verified
+  </span>
+);
+
 const CareTheCulture = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
   const fileInputRef = useRef(null);
@@ -37,27 +43,16 @@ const CareTheCulture = () => {
     formState: { errors },
   } = useForm();
 
-  // Fetch heritage sites
+  // Fetch heritage sites (pending NOT shown to regular users — only active ones)
   const { data: sitesData, isLoading, refetch } = useQuery(
     ['heritageSites', selectedCategory, searchQuery],
     () => heritage.getAll({
       category: selectedCategory !== 'all' ? selectedCategory : undefined,
+      status: 'active',
       limit: 20,
     }),
-    {
-      staleTime: 5 * 60 * 1000,
-    }
+    { staleTime: 5 * 60 * 1000 }
   );
-
-  // Fetch categories
-  const { data: categoriesData } = useQuery(
-    'categories',
-    explore.getCategories,
-    {
-      staleTime: 10 * 60 * 1000,
-    }
-  );
-
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -77,19 +72,20 @@ const CareTheCulture = () => {
 
   const handleUploadSubmit = async (data) => {
     if (!isAuthenticated) {
-      toast.error('Please login to contribute heritage information');
+      toast.error('Please log in to contribute heritage information');
       return;
     }
 
     try {
       const formData = new FormData();
+      // Core cultural fields only — no internal IDs or DB-specific metadata
       formData.append('name', data.name);
       formData.append('description', data.description);
       formData.append('category', data.category);
       formData.append('location[address]', data.address);
       formData.append('location[city]', data.city);
       formData.append('location[state]', data.state);
-      formData.append('location[country]', data.country || 'India');
+      formData.append('location[country]', 'India');
       formData.append('location[coordinates][latitude]', data.latitude);
       formData.append('location[coordinates][longitude]', data.longitude);
       formData.append('location[coordinates][type]', 'Point');
@@ -97,109 +93,134 @@ const CareTheCulture = () => {
       formData.append('history[historicalSignificance]', data.historicalSignificance);
       if (data.architecture) formData.append('history[architecture]', data.architecture);
       if (data.culturalImportance) formData.append('history[culturalImportance]', data.culturalImportance);
-      if (data.openingTime) formData.append('visitorInfo[visitingHours][opening]', data.openingTime);
-      if (data.closingTime) formData.append('visitorInfo[visitingHours][closing]', data.closingTime);
-      if (data.closedDays) formData.append('visitorInfo[visitingHours][closedDays]', data.closedDays);
-      if (data.adultFee) formData.append('visitorInfo[entryFee][adults]', data.adultFee);
-      if (data.childFee) formData.append('visitorInfo[entryFee][children]', data.childFee);
-      if (data.foreignerFee) formData.append('visitorInfo[entryFee][foreigners]', data.foreignerFee);
-      if (data.bestTimeToVisit) formData.append('visitorInfo[bestTimeToVisit]', data.bestTimeToVisit);
-      if (data.estimatedDuration) formData.append('visitorInfo[estimatedDuration]', data.estimatedDuration);
-      if (data.facilities) formData.append('visitorInfo[facilities]', data.facilities);
-
-      // Append image files
-      imageFiles.forEach((file) => {
-        formData.append('images', file);
-      });
+      // status is enforced as 'pending' by the backend — not settable from UI
+      imageFiles.forEach((file) => { formData.append('images', file); });
 
       await heritage.createWithImages(formData);
-      toast.success('Heritage site submitted successfully! It will be reviewed by our team.');
+      toast.success('Thank you! Your contribution is under review and will appear once verified by our team.');
       reset();
       setShowUploadForm(false);
       setImagePreviews([]);
       setImageFiles([]);
       refetch();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit heritage site');
+      toast.error(error.response?.data?.message || 'Failed to submit. Please try again.');
     }
   };
 
-  const filteredSites = Array.isArray(sitesData?.data) ? sitesData.data.filter(site => 
-    site.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    site.description.toLowerCase().includes(searchQuery.toLowerCase())
-  ) : [];
+  const filteredSites = Array.isArray(sitesData?.data)
+    ? sitesData.data.filter(site =>
+      site.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      site.description.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-primary-600 to-accent-500 text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Care for Our Culture
-            </h1>
-            <p className="text-xl md:text-2xl max-w-3xl mx-auto text-primary-100 mb-8">
-              Explore heritage sites shared by our community and contribute your knowledge 
-              to help preserve our cultural legacy.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button
-                onClick={() => setShowUploadForm(true)}
-                className="bg-white text-primary-600 hover:bg-gray-100 font-bold py-3 px-6 rounded-lg text-lg transition-colors duration-200 inline-flex items-center justify-center"
-              >
-                <CloudArrowUpIcon className="w-5 h-5 mr-2" />
-                Contribute Heritage Site
-              </button>
-              <Link
-                to="/donate"
-                className="border-2 border-white text-white hover:bg-white hover:text-primary-600 font-bold py-3 px-6 rounded-lg text-lg transition-all duration-200 inline-flex items-center justify-center"
-              >
-                <HeartIcon className="w-5 h-5 mr-2" />
-                Support Preservation
-              </Link>
-            </div>
+    <div className="min-h-screen" style={{ backgroundColor: '#FCF5E5' }}>
+      {/* ── Hero ──────────────────────────────────────────────────────────── */}
+      <section
+        className="relative py-24 text-white"
+        style={{ background: 'linear-gradient(135deg, #580000 0%, #720e0e 60%, #4a0000 100%)' }}
+      >
+        {/* Mandala pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.5'%3E%3Cpath d='M30 30c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm0-10c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm10 10c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px',
+          }}
+        />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1
+            className="text-5xl md:text-6xl font-bold mb-4 gold-text"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Care for Our Culture
+          </h1>
+          <div
+            className="mx-auto mb-6"
+            style={{ width: 80, height: 2, background: 'linear-gradient(to right, transparent, #D4AF37, transparent)' }}
+          />
+          <p
+            className="text-xl md:text-2xl max-w-3xl mx-auto mb-10 font-serif drop-shadow-md"
+            style={{ color: '#f5ead5' }}
+          >
+            Explore India's heritage shared by our community and contribute your knowledge
+            to help preserve our cultural legacy for future generations.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => setShowUploadForm(true)}
+              className="inline-flex items-center justify-center px-8 py-3 rounded-lg font-display uppercase tracking-wider text-sm transition-all duration-200 font-bold"
+              style={{ backgroundColor: '#D4AF37', color: '#580000' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#b38728'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#D4AF37'}
+            >
+              <CloudArrowUpIcon className="w-5 h-5 mr-2" />
+              Contribute a Heritage Site
+            </button>
+            <Link
+              to="/donate"
+              className="inline-flex items-center justify-center px-8 py-3 rounded-lg font-display uppercase tracking-wider text-sm transition-all duration-200 font-bold"
+              style={{ border: '2px solid #D4AF37', color: '#f5ead5' }}
+            >
+              <HeartIcon className="w-5 h-5 mr-2" />
+              Support Preservation
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Upload Form Modal */}
+      {/* ── Contribution Modal ─────────────────────────────────────────────── */}
       {showUploadForm && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Contribute Heritage Site</h2>
-                <button
-                  onClick={() => setShowUploadForm(false)}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="vintage-card rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div
+              className="p-6 flex items-center justify-between"
+              style={{ borderBottom: '1px solid rgba(212,175,55,0.3)' }}
+            >
+              <div>
+                <h2
+                  className="text-2xl font-bold font-display"
+                  style={{ color: '#580000', fontFamily: "'Playfair Display', serif" }}
                 >
-                  <XMarkIcon className="w-6 h-6 text-gray-500" />
-                </button>
+                  Contribute a Heritage Site
+                </h2>
+                <p className="text-sm font-serif mt-1" style={{ color: '#8a6a3a' }}>
+                  Your submission will be reviewed by our preservation team before going live.
+                </p>
               </div>
+              <button
+                onClick={() => setShowUploadForm(false)}
+                className="p-2 rounded-lg transition-colors ml-4"
+                style={{ backgroundColor: 'rgba(212,175,55,0.1)' }}
+              >
+                <XMarkIcon className="w-6 h-6" style={{ color: '#580000' }} />
+              </button>
             </div>
 
-            <form onSubmit={handleSubmit(handleUploadSubmit)} className="p-6 space-y-6">
-              {/* Basic Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+            <form onSubmit={handleSubmit(handleUploadSubmit)} className="p-6 space-y-8">
+              {/* ── Site Identity ───────────────────────────────────────── */}
+              <section>
+                <h3 className="text-base font-semibold font-display uppercase tracking-widest mb-4" style={{ color: '#D4AF37' }}>
+                  Site Identity
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
                       Site Name *
                     </label>
                     <input
                       {...register('name', { required: 'Site name is required' })}
                       className="input-field"
-                      placeholder="Enter heritage site name"
+                      placeholder="e.g., Hampi Ruins, Dholavira"
                     />
-                    {errors.name && (
-                      <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-                    )}
+                    {errors.name && <p className="text-red-700 text-xs mt-1">{errors.name.message}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
                       Category *
                     </label>
                     <select {...register('category', { required: 'Category is required' })} className="input-field">
@@ -208,257 +229,157 @@ const CareTheCulture = () => {
                         <option key={cat.value} value={cat.value}>{cat.label}</option>
                       ))}
                     </select>
-                    {errors.category && (
-                      <p className="text-red-500 text-sm mt-1">{errors.category.message}</p>
-                    )}
+                    {errors.category && <p className="text-red-700 text-xs mt-1">{errors.category.message}</p>}
                   </div>
 
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
                       Description *
                     </label>
                     <textarea
                       {...register('description', { required: 'Description is required' })}
                       rows={3}
                       className="input-field"
-                      placeholder="Describe the heritage site and its significance"
+                      placeholder="Describe the heritage site, its architecture, and what makes it culturally significant"
                     />
-                    {errors.description && (
-                      <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
-                    )}
+                    {errors.description && <p className="text-red-700 text-xs mt-1">{errors.description.message}</p>}
                   </div>
                 </div>
-              </div>
+              </section>
 
-              {/* Location Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Location Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Address *
-                    </label>
-                    <input
-                      {...register('address', { required: 'Address is required' })}
-                      className="input-field"
-                      placeholder="Complete address"
-                    />
-                    {errors.address && (
-                      <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      City *
-                    </label>
-                    <input
-                      {...register('city', { required: 'City is required' })}
-                      className="input-field"
-                      placeholder="City name"
-                    />
-                    {errors.city && (
-                      <p className="text-red-500 text-sm mt-1">{errors.city.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      State *
-                    </label>
-                    <input
-                      {...register('state', { required: 'State is required' })}
-                      className="input-field"
-                      placeholder="State name"
-                    />
-                    {errors.state && (
-                      <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Latitude *
-                    </label>
-                    <input
-                      {...register('latitude', { required: 'Latitude is required' })}
-                      type="number"
-                      step="any"
-                      className="input-field"
-                      placeholder="e.g., 28.6139"
-                    />
-                    {errors.latitude && (
-                      <p className="text-red-500 text-sm mt-1">{errors.latitude.message}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Longitude *
-                    </label>
-                    <input
-                      {...register('longitude', { required: 'Longitude is required' })}
-                      type="number"
-                      step="any"
-                      className="input-field"
-                      placeholder="e.g., 77.2090"
-                    />
-                    {errors.longitude && (
-                      <p className="text-red-500 text-sm mt-1">{errors.longitude.message}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Historical Information */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Historical Information</h3>
+              {/* ── Historical Background ──────────────────────────────── */}
+              <section>
+                <h3 className="text-base font-semibold font-display uppercase tracking-widest mb-4" style={{ color: '#D4AF37' }}>
+                  Historical Background
+                </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
                       Establishment Period *
                     </label>
                     <input
                       {...register('established', { required: 'Establishment period is required' })}
                       className="input-field"
-                      placeholder="e.g., 12th Century, 1850, Ancient"
+                      placeholder="e.g., 12th Century, 1750 CE, Ancient (pre-1000 BCE)"
                     />
-                    {errors.established && (
-                      <p className="text-red-500 text-sm mt-1">{errors.established.message}</p>
-                    )}
+                    {errors.established && <p className="text-red-700 text-xs mt-1">{errors.established.message}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
                       Historical Significance *
                     </label>
                     <textarea
                       {...register('historicalSignificance', { required: 'Historical significance is required' })}
                       rows={3}
                       className="input-field"
-                      placeholder="Describe the historical importance of this site"
+                      placeholder="Describe the historical importance — events, rulers, battles, or cultural milestones associated with this site"
                     />
-                    {errors.historicalSignificance && (
-                      <p className="text-red-500 text-sm mt-1">{errors.historicalSignificance.message}</p>
-                    )}
+                    {errors.historicalSignificance && <p className="text-red-700 text-xs mt-1">{errors.historicalSignificance.message}</p>}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Architecture (Optional)
-                    </label>
-                    <input
-                      {...register('architecture')}
-                      className="input-field"
-                      placeholder="Architectural style and features"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cultural Importance (Optional)
-                    </label>
-                    <textarea
-                      {...register('culturalImportance')}
-                      rows={2}
-                      className="input-field"
-                      placeholder="Cultural significance and traditions"
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
+                        Architectural Style (Optional)
+                      </label>
+                      <input
+                        {...register('architecture')}
+                        className="input-field"
+                        placeholder="e.g., Dravidian, Mughal, Colonial"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
+                        Cultural Importance (Optional)
+                      </label>
+                      <input
+                        {...register('culturalImportance')}
+                        className="input-field"
+                        placeholder="e.g., Pilgrimage site, Festival venue"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </section>
 
-              {/* Visitor Information (Optional) */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Visitor Information (Optional)</h3>
+              {/* ── Location ────────────────────────────────────────────── */}
+              <section>
+                <h3 className="text-base font-semibold font-display uppercase tracking-widest mb-4" style={{ color: '#D4AF37' }}>
+                  Location
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Opening Time
-                    </label>
-                    <input
-                      {...register('openingTime')}
-                      className="input-field"
-                      placeholder="e.g., 9:00 AM"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Closing Time
-                    </label>
-                    <input
-                      {...register('closingTime')}
-                      className="input-field"
-                      placeholder="e.g., 6:00 PM"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Adult Fee (INR)
-                    </label>
-                    <input
-                      {...register('adultFee')}
-                      type="number"
-                      className="input-field"
-                      placeholder="0"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Child Fee (INR)
-                    </label>
-                    <input
-                      {...register('childFee')}
-                      type="number"
-                      className="input-field"
-                      placeholder="0"
-                    />
-                  </div>
-
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Best Time to Visit
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
+                      Address *
                     </label>
                     <input
-                      {...register('bestTimeToVisit')}
+                      {...register('address', { required: 'Address is required' })}
                       className="input-field"
-                      placeholder="e.g., October to March"
+                      placeholder="Village / Road / Landmark"
                     />
+                    {errors.address && <p className="text-red-700 text-xs mt-1">{errors.address.message}</p>}
                   </div>
 
-                  <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Facilities (comma-separated)
+                  <div>
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>City *</label>
+                    <input {...register('city', { required: 'City is required' })} className="input-field" placeholder="City" />
+                    {errors.city && <p className="text-red-700 text-xs mt-1">{errors.city.message}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>State *</label>
+                    <input {...register('state', { required: 'State is required' })} className="input-field" placeholder="State" />
+                    {errors.state && <p className="text-red-700 text-xs mt-1">{errors.state.message}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
+                      Latitude *
+                      <span className="text-xs font-serif font-normal ml-1" style={{ color: '#8a6a3a' }}>(decimal degrees)</span>
                     </label>
                     <input
-                      {...register('facilities')}
-                      className="input-field"
-                      placeholder="e.g., Parking, Restrooms, Guide Service"
+                      {...register('latitude', { required: 'Required' })}
+                      type="number" step="any" className="input-field"
+                      placeholder="e.g., 28.6139"
                     />
+                    {errors.latitude && <p className="text-red-700 text-xs mt-1">{errors.latitude.message}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium font-display mb-2" style={{ color: '#580000' }}>
+                      Longitude *
+                      <span className="text-xs font-serif font-normal ml-1" style={{ color: '#8a6a3a' }}>(decimal degrees)</span>
+                    </label>
+                    <input
+                      {...register('longitude', { required: 'Required' })}
+                      type="number" step="any" className="input-field"
+                      placeholder="e.g., 77.2090"
+                    />
+                    {errors.longitude && <p className="text-red-700 text-xs mt-1">{errors.longitude.message}</p>}
                   </div>
                 </div>
-              </div>
+              </section>
 
-              {/* Image Upload */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Images (Max 5)</h3>
+              {/* ── Images ──────────────────────────────────────────────── */}
+              <section>
+                <h3 className="text-base font-semibold font-display uppercase tracking-widest mb-4" style={{ color: '#D4AF37' }}>
+                  Images (up to 5)
+                </h3>
                 <div
-                  className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary-500 transition-colors"
+                  className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors"
+                  style={{ borderColor: 'rgba(212,175,55,0.4)' }}
                   onClick={() => fileInputRef.current?.click()}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = '#D4AF37'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)'}
                 >
-                  <CloudArrowUpIcon className="w-10 h-10 mx-auto text-gray-400 mb-3" />
-                  <p className="text-gray-600 mb-1">Click to upload images</p>
-                  <p className="text-sm text-gray-400">JPG, PNG, WebP up to 5 images</p>
+                  <CloudArrowUpIcon className="w-10 h-10 mx-auto mb-3" style={{ color: '#D4AF37' }} />
+                  <p className="font-serif mb-1" style={{ color: '#580000' }}>Click to upload images of the heritage site</p>
+                  <p className="text-sm font-serif" style={{ color: '#8a6a3a' }}>JPG, PNG, WebP · Max 5 images</p>
                   <input
                     ref={fileInputRef}
-                    type="file"
-                    multiple
-                    accept="image/jpeg,image/png,image/webp"
-                    onChange={handleImageChange}
-                    className="hidden"
+                    type="file" multiple accept="image/jpeg,image/png,image/webp"
+                    onChange={handleImageChange} className="hidden"
                   />
                 </div>
                 {imagePreviews.length > 0 && (
@@ -466,37 +387,40 @@ const CareTheCulture = () => {
                     {imagePreviews.map((preview, index) => (
                       <div key={index} className="relative group">
                         <img
-                          src={preview}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-20 object-cover rounded-lg border border-gray-200"
+                          src={preview} alt={`Preview ${index + 1}`}
+                          className="w-full h-20 object-cover rounded-lg royal-border"
                         />
                         <button
-                          type="button"
-                          onClick={() => removeImage(index)}
-                          className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          type="button" onClick={() => removeImage(index)}
+                          className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          style={{ backgroundColor: '#580000' }}
                         >
-                          <XMarkIcon className="w-3 h-3" />
+                          <XMarkIcon className="w-3 h-3 text-white" />
                         </button>
                       </div>
                     ))}
                   </div>
                 )}
+              </section>
+
+              {/* ── Review Notice ────────────────────────────────────────── */}
+              <div className="rounded-lg p-4 font-serif text-sm" style={{ backgroundColor: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.3)', color: '#4a2c00' }}>
+                🛡️ All submissions are reviewed by our heritage verification team. Your contribution will be listed as
+                <strong className="font-display"> Pending Review</strong> until approved. We may contact you for additional information.
               </div>
 
-              {/* Form Actions */}
-              <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+              {/* ── Actions ─────────────────────────────────────────────── */}
+              <div className="flex justify-end space-x-4 pt-2" style={{ borderTop: '1px solid rgba(212,175,55,0.25)' }}>
                 <button
                   type="button"
                   onClick={() => setShowUploadForm(false)}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-6 py-2 rounded-lg font-display text-xs uppercase tracking-wider transition-colors"
+                  style={{ border: '1px solid rgba(212,175,55,0.4)', color: '#580000', backgroundColor: '#FFFFF0' }}
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="btn-primary"
-                >
-                  Submit Heritage Site
+                <button type="submit" className="btn-primary">
+                  Submit for Review
                 </button>
               </div>
             </form>
@@ -504,153 +428,158 @@ const CareTheCulture = () => {
         </div>
       )}
 
-      {/* Search and Filter Section */}
-      <section className="py-8 bg-white border-b border-gray-200">
+      {/* ── Search & Category Filter ───────────────────────────────────────── */}
+      <section
+        className="py-6 sticky top-0 z-10"
+        style={{ backgroundColor: '#FCF5E5', borderBottom: '1px solid rgba(212,175,55,0.3)', backdropFilter: 'blur(8px)' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            {/* Search Bar */}
-            <div className="relative flex-1 max-w-md">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            {/* Search */}
+            <div className="relative flex-1 max-w-lg">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#D4AF37' }} />
               <input
                 type="text"
-                placeholder="Search heritage sites..."
+                placeholder="Search heritage sites by name or description…"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
+                className="w-full pl-10 pr-4 py-2 rounded-lg font-serif text-sm focus:outline-none transition-colors"
+                style={{
+                  backgroundColor: '#FFFFF0',
+                  border: '1px solid rgba(212,175,55,0.4)',
+                  color: '#2d1a00',
+                }}
               />
             </div>
 
-            {/* Category Filter */}
-            <div className="flex items-center space-x-4">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none"
-              >
-                {categories.map(cat => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.icon} {cat.label}
-                  </option>
-                ))}
-              </select>
-
-              <button
-                onClick={() => setShowFilters(!showFilters)}
-                className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <FunnelIcon className="w-4 h-4" />
-                <span>Filters</span>
-              </button>
-            </div>
+            {/* Category */}
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 rounded-lg font-display text-xs uppercase tracking-wider focus:outline-none"
+              style={{
+                backgroundColor: '#FFFFF0',
+                border: '1px solid rgba(212,175,55,0.4)',
+                color: '#580000',
+              }}
+            >
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.icon} {cat.label}</option>
+              ))}
+            </select>
           </div>
         </div>
       </section>
 
-      {/* Heritage Sites Grid */}
+      {/* ── Heritage Sites Grid ────────────────────────────────────────────── */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[...Array(6)].map((_, index) => (
-                <div key={index} className="card animate-pulse">
-                  <div className="h-48 bg-gray-200"></div>
-                  <div className="p-6">
-                    <div className="h-6 bg-gray-200 rounded mb-3"></div>
-                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="card animate-pulse">
+                  <div className="h-48" style={{ backgroundColor: 'rgba(212,175,55,0.1)' }} />
+                  <div className="p-6 space-y-3">
+                    <div className="h-6 rounded" style={{ backgroundColor: 'rgba(212,175,55,0.12)' }} />
+                    <div className="h-4 rounded" style={{ backgroundColor: 'rgba(212,175,55,0.08)' }} />
+                    <div className="h-4 rounded w-3/4" style={{ backgroundColor: 'rgba(212,175,55,0.08)' }} />
                   </div>
                 </div>
               ))}
             </div>
           ) : filteredSites.length === 0 ? (
-            <div className="text-center py-12">
-              <BuildingLibraryIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No heritage sites found</h3>
-              <p className="text-gray-600 mb-6">
-                {searchQuery ? 'Try adjusting your search terms' : 'Be the first to contribute a heritage site!'}
+            <div className="text-center py-16">
+              <BuildingLibraryIcon className="w-16 h-16 mx-auto mb-4" style={{ color: 'rgba(212,175,55,0.5)' }} />
+              <h3 className="text-xl font-semibold mb-2 font-display" style={{ color: '#580000' }}>
+                {searchQuery ? 'No sites match your search' : 'No heritage sites yet'}
+              </h3>
+              <p className="mb-6 font-serif" style={{ color: '#8a6a3a' }}>
+                {searchQuery ? 'Try different keywords or clear the search.' : 'Be the first to document a heritage site!'}
               </p>
-              <button
-                onClick={() => setShowUploadForm(true)}
-                className="btn-primary inline-flex items-center"
-              >
-                <PlusIcon className="w-5 h-5 mr-2" />
-                Add Heritage Site
-              </button>
+              {!searchQuery && (
+                <button
+                  onClick={() => setShowUploadForm(true)}
+                  className="btn-primary inline-flex items-center"
+                >
+                  <PlusIcon className="w-5 h-5 mr-2" />
+                  Add Heritage Site
+                </button>
+              )}
             </div>
           ) : (
             <>
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold font-display" style={{ color: '#580000', fontFamily: "'Playfair Display', serif" }}>
                   Heritage Sites ({filteredSites.length})
                 </h2>
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <span>Contributed by community</span>
-                  <HeartIcon className="w-4 h-4 text-red-500" />
+                <div className="flex items-center space-x-2 text-sm font-serif" style={{ color: '#580000' }}>
+                  <span>Community contributions</span>
+                  <HeartIcon className="w-4 h-4" style={{ color: '#D4AF37' }} />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredSites.map((site) => (
-                  <div className="bg-secondary-50 border border-accent-500/20 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 group hover:scale-105 transition-transform duration-300">
-                    <div className="relative h-48 overflow-hidden">
+                  <div
+                    key={site._id}
+                    className="card group hover:scale-105 transition-transform duration-300"
+                    style={{ border: '1px solid rgba(212,175,55,0.3)' }}
+                  >
+                    <div className="relative h-48 overflow-hidden rounded-t-xl">
                       <img
                         src={site.images?.[0]?.url || 'https://images.unsplash.com/photo-1488282396544-0d9114f9f9a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
                         alt={site.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
-                        <div className="flex items-center space-x-1">
-                          <StarIconSolid className="w-4 h-4 text-yellow-500" />
-                          <span className="text-sm font-medium">{site.ratings.average.toFixed(1)}</span>
-                        </div>
+                      {/* Rating badge */}
+                      <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full flex items-center space-x-1">
+                        <StarIconSolid className="w-3 h-3" style={{ color: '#D4AF37' }} />
+                        <span className="text-xs font-display text-white">{site.ratings.average.toFixed(1)}</span>
                       </div>
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium capitalize">
+                      {/* Category badge */}
+                      <div className="absolute top-3 left-3">
+                        <span
+                          className="px-2 py-1 rounded-full text-xs font-display uppercase tracking-wider"
+                          style={{ backgroundColor: '#580000', color: '#f5ead5' }}
+                        >
                           {site.category.replace('_', ' ')}
                         </span>
                       </div>
-                      {site.status === 'active' && (
-                        <div className="absolute bottom-4 left-4 bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center">
-                          <ShieldCheckIcon className="w-4 h-4 mr-1" />
-                          Verified
-                        </div>
-                      )}
-                      {site.status === 'pending' && (
-                        <div className="absolute bottom-4 left-4 bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                          Pending Review
-                        </div>
-                      )}
-                      {site.status === 'rejected' && (
-                        <div className="absolute bottom-4 left-4 bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">
-                          Rejected
+                      {/* Verified badge */}
+                      {site.verified && (
+                        <div className="absolute bottom-3 left-3">
+                          <GoldVerifiedBadge />
                         </div>
                       )}
                     </div>
+
                     <div className="p-6">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center text-gray-500 text-sm">
-                          <MapPinIcon className="w-4 h-4 mr-1" />
-                          {site.location.city}, {site.location.state}
-                        </div>
+                      <div className="flex items-center text-xs mb-2 font-serif" style={{ color: '#D4AF37' }}>
+                        <MapPinIcon className="w-3 h-3 mr-1" />
+                        {site.location.city}, {site.location.state}
                       </div>
-                      <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                      <h3
+                        className="text-lg font-semibold mb-2 font-display group-hover:opacity-80 transition-opacity"
+                        style={{ color: '#580000' }}
+                      >
                         {site.name}
                       </h3>
-                      <p className="text-gray-600 mb-4 line-clamp-2">
+                      <p className="text-sm mb-4 line-clamp-2 font-serif" style={{ color: '#4a2c00' }}>
                         {site.description}
                       </p>
                       <div className="flex items-center justify-between">
                         <Link
                           to={`/heritage/${site._id}`}
-                          className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium"
+                          className="inline-flex items-center text-xs font-display uppercase tracking-wider transition-colors"
+                          style={{ color: '#D4AF37' }}
                         >
                           Explore Site
-                          <ArrowRightIcon className="w-4 h-4 ml-1" />
+                          <ArrowRightIcon className="w-3 h-3 ml-1" />
                         </Link>
                         {site.contributedBy && (
-                          <div className="text-xs text-gray-500">
+                          <span className="text-xs font-serif" style={{ color: '#8a6a3a' }}>
                             by {site.contributedBy.name}
-                          </div>
+                          </span>
                         )}
                       </div>
                     </div>

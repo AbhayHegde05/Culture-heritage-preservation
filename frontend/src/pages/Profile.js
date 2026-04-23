@@ -83,15 +83,18 @@ const Profile = () => {
     setIsEditing(!isEditing);
   };
 
+  const donationsList = Array.isArray(donationsData?.data?.data) ? donationsData.data.data : [];
+  const contributedSitesList = Array.isArray(contributedSites?.data?.data) ? contributedSites.data.data : [];
+
   const stats = {
-    totalDonations: donationsData?.data?.reduce((sum, d) => sum + d.amount, 0) || 0,
-    donationCount: donationsData?.data?.length || 0,
-    contributedSites: contributedSites?.data?.length || 0,
+    totalDonations: donationsList.reduce((sum, d) => sum + (d.amount || 0), 0),
+    donationCount: donationsList.length,
+    contributedSites: contributedSitesList.length,
     joinedDate: user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A',
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Profile Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
@@ -164,7 +167,7 @@ const Profile = () => {
                     className="input-field"
                   />
                   {errors.name && (
-                    <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                    <p className="text-red-700 text-sm mt-1">{errors.name.message}</p>
                   )}
                 </div>
 
@@ -184,7 +187,7 @@ const Profile = () => {
                     className="input-field"
                   />
                   {errors.email && (
-                    <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+                    <p className="text-red-700 text-sm mt-1">{errors.email.message}</p>
                   )}
                 </div>
 
@@ -199,7 +202,7 @@ const Profile = () => {
                     placeholder="+91 98765 43210"
                   />
                   {errors.phone && (
-                    <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+                    <p className="text-red-700 text-sm mt-1">{errors.phone.message}</p>
                   )}
                 </div>
               </div>
@@ -265,9 +268,9 @@ const Profile = () => {
                       </div>
                     ))}
                   </div>
-                ) : contributedSites?.data?.length > 0 ? (
+                ) : contributedSitesList.length > 0 ? (
                   <div className="space-y-4">
-                    {contributedSites.data.map((site) => (
+                    {contributedSitesList.map((site) => (
                       <div key={site._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -331,9 +334,9 @@ const Profile = () => {
                       </div>
                     ))}
                   </div>
-                ) : donationsData?.data?.length > 0 ? (
+                ) : donationsList.length > 0 ? (
                   <div className="space-y-4">
-                    {donationsData.data.map((donation) => (
+                    {donationsList.map((donation) => (
                       <div key={donation._id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">

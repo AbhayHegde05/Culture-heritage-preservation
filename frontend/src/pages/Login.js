@@ -90,7 +90,7 @@ const Login = () => {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-700">{errors.email.message}</p>
               )}
             </div>
 
@@ -126,7 +126,7 @@ const Login = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-red-700">{errors.password.message}</p>
               )}
             </div>
 

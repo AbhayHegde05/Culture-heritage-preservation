@@ -62,15 +62,15 @@ exports.processDonation = async (req, res, next) => {
       recurring
     } = req.body;
 
-    // Verify payment with Stripe
-    let paymentStatus = 'completed';
-    try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(paymentId);
-      if (paymentIntent.status !== 'succeeded') {
+    // Verify payment — skip Stripe for UPI (UTR-based manual verification)
+    let paymentStatus = 'pending';
+    if (paymentMethod === 'card' || paymentMethod === 'bank_transfer') {
+      try {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentId);
+        paymentStatus = paymentIntent.status === 'succeeded' ? 'completed' : 'failed';
+      } catch (error) {
         paymentStatus = 'failed';
       }
-    } catch (error) {
-      paymentStatus = 'failed';
     }
 
     // Create donation record

@@ -92,7 +92,7 @@ const Register = () => {
                 />
               </div>
               {errors.name && (
-                <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+                <p className="mt-1 text-sm text-red-700">{errors.name.message}</p>
               )}
             </div>
 
@@ -121,7 +121,7 @@ const Register = () => {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+                <p className="mt-1 text-sm text-red-700">{errors.email.message}</p>
               )}
             </div>
 
@@ -149,7 +149,7 @@ const Register = () => {
                 />
               </div>
               {errors.phone && (
-                <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+                <p className="mt-1 text-sm text-red-700">{errors.phone.message}</p>
               )}
             </div>
 
@@ -189,7 +189,7 @@ const Register = () => {
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+                <p className="mt-1 text-sm text-red-700">{errors.password.message}</p>
               )}
             </div>
 
@@ -226,7 +226,7 @@ const Register = () => {
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>
+                <p className="mt-1 text-sm text-red-700">{errors.confirmPassword.message}</p>
               )}
             </div>
 

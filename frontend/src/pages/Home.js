@@ -43,16 +43,16 @@ const Home = () => {
   // Hero slider data — Indian Heritage Focus
   const heroSlides = [
     {
-      title: 'Taj Mahal — Symbol of Eternal Love',
-      description: 'Explore the crown jewel of Indian architecture, a UNESCO World Heritage site and testament to eternal love.',
-      image: 'https://images.unsplash.com/photo-1564507592333-c60657eea523?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
-      cta: 'Explore Taj Mahal',
+      title: 'Ram Mandir — The Divine Abode of Ayodhya',
+      description: "Witness the grandeur of the newly consecrated Ram Mandir in Ayodhya — a timeless symbol of devotion, heritage, and India's spiritual legacy.",
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Ram_Mandir_Ayodhya_Jan_2024.jpg/1280px-Ram_Mandir_Ayodhya_Jan_2024.jpg',
+      cta: 'Explore Ram Mandir',
       link: '/explore?category=temple',
     },
     {
-      title: 'Varanasi — The Spiritual Capital',
-      description: "Experience the ancient ghats and spiritual aura of India's holiest city on the banks of the sacred Ganges.",
-      image: 'https://images.unsplash.com/photo-1561361058-4f4f93480940?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80',
+      title: 'Varanasi — The Eternal City of Light',
+      description: "Immerse yourself in the sacred Ganga Aarti, ancient ghats, and the timeless spiritual energy of the world's oldest living city.",
+      image: 'https://images.unsplash.com/photo-1561361058-4f4f93480940?q=80&w=1920&auto=format&fit=crop',
       cta: 'Discover Varanasi',
       link: '/explore?category=lake',
     },
@@ -123,14 +123,6 @@ const Home = () => {
               />
               {/* Dark maroon overlay */}
               <div className="absolute inset-0" style={{ backgroundColor: 'rgba(88, 0, 0, 0.55)' }} />
-              {/* Mandala / Geometric Pattern Overlay */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.07'%3E%3Cpath d='M30 30c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm0-10c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm10 0c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm0 10c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm-10 10c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4zm10 0c0-2.21-1.79-4-4-4s-4 1.79-4 4 1.79 4 4 4 4-1.79 4-4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                  backgroundSize: '60px 60px',
-                }}
-              />
             </div>
           ))}
         </div>
@@ -161,7 +153,10 @@ const Home = () => {
                 background: 'linear-gradient(to right, transparent, #D4AF37, transparent)',
               }}
             />
-            <p className="text-xl md:text-2xl mb-10 animate-slide-up font-serif" style={{ color: '#f5ead5' }}>
+            <p
+              className="text-xl md:text-2xl mb-10 animate-slide-up font-serif drop-shadow-md"
+              style={{ color: '#f5ead5' }}
+            >
               {heroSlides[currentSlide].description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
@@ -183,20 +178,7 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Slider Indicators */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-          {heroSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentSlide(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${index === currentSlide
-                  ? 'w-8'
-                  : 'w-2 opacity-60'
-                }`}
-              style={{ backgroundColor: '#D4AF37' }}
-            />
-          ))}
-        </div>
+
       </section>
 
       {/* ── Stats Section ────────────────────────────────────────────────── */}

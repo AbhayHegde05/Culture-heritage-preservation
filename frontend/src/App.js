@@ -15,6 +15,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfUse from './pages/TermsOfUse';
 
 // Components
 import Navbar from './components/Navbar';
@@ -40,7 +42,7 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <Router>
-            <div className="min-h-screen flex flex-col bg-gray-50">
+            <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FCF5E5' }}>
               <Navbar />
               <main className="flex-grow">
                 <Routes>
@@ -53,24 +55,26 @@ function App() {
                   <Route path="/heritage/:id" element={<HeritageDetail />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
-                  
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsOfUse />} />
+
                   {/* Protected Routes */}
-                  <Route 
-                    path="/profile" 
+                  <Route
+                    path="/profile"
                     element={
                       <ProtectedRoute>
                         <Profile />
                       </ProtectedRoute>
-                    } 
+                    }
                   />
-                  
+
                   {/* 404 Page */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
               <Footer />
             </div>
-            
+
             {/* Toast Notifications */}
             <Toaster
               position="top-right"
@@ -83,15 +87,15 @@ function App() {
                 success: {
                   duration: 3000,
                   iconTheme: {
-                    primary: '#10b981',
-                    secondary: '#fff',
+                    primary: '#D4AF37',
+                    secondary: '#580000',
                   },
                 },
                 error: {
                   duration: 5000,
                   iconTheme: {
-                    primary: '#ef4444',
-                    secondary: '#fff',
+                    primary: '#580000',
+                    secondary: '#D4AF37',
                   },
                 },
               }}

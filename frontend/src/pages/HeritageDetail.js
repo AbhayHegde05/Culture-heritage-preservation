@@ -477,7 +477,7 @@ const HeritageDetail = () => {
                         <option value="1">1 - Poor</option>
                       </select>
                       {errors.rating && (
-                        <p className="text-red-500 text-sm mt-1">{errors.rating.message}</p>
+                        <p className="text-red-700 text-sm mt-1">{errors.rating.message}</p>
                       )}
                     </div>
 
@@ -492,7 +492,7 @@ const HeritageDetail = () => {
                         placeholder="Share your experience..."
                       />
                       {errors.comment && (
-                        <p className="text-red-500 text-sm mt-1">{errors.comment.message}</p>
+                        <p className="text-red-700 text-sm mt-1">{errors.comment.message}</p>
                       )}
                     </div>
 

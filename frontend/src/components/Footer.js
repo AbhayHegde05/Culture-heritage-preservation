@@ -4,9 +4,9 @@ import {
   HeartIcon,
   MapPinIcon,
   EnvelopeIcon,
-  PhoneIcon,
   GlobeAltIcon,
   AcademicCapIcon,
+  CodeBracketIcon,
 } from '@heroicons/react/24/outline';
 
 const Footer = () => {
@@ -21,69 +21,114 @@ const Footer = () => {
     ],
     support: [
       { name: 'Donate', href: '/donate' },
-      { name: 'Volunteer', href: '/about#volunteer' },
-      { name: 'Partners', href: '/about#partners' },
+      { name: 'Contribute', href: '/care-the-culture' },
+      { name: 'Our Partners', href: '/about#partners' },
       { name: 'Contact Us', href: '/about#contact' },
     ],
     resources: [
       { name: 'About Us', href: '/about' },
       { name: 'Our Mission', href: '/about#mission' },
-      { name: 'Documentation', href: '/about#docs' },
-      { name: 'Privacy Policy', href: '/about#privacy' },
+      { name: 'Privacy Policy', href: '/privacy' },
+      { name: 'Terms of Use', href: '/terms' },
     ],
   };
 
+  // Real external links — no # placeholders
   const socialLinks = [
-    { name: 'Facebook', href: '#', icon: '📘' },
-    { name: 'Twitter', href: '#', icon: '🐦' },
-    { name: 'Instagram', href: '#', icon: '📷' },
-    { name: 'LinkedIn', href: '#', icon: '💼' },
+    {
+      name: 'GitHub',
+      href: 'https://github.com/AbhayHegde05/Culture-heritage-preservation',
+      icon: '⌨️',
+      label: 'Open Source on GitHub',
+    },
+    {
+      name: 'UNESCO',
+      href: 'https://www.unesco.org/en/culture',
+      icon: '🏛️',
+      label: 'UNESCO Culture',
+    },
+    {
+      name: 'ASI',
+      href: 'https://asi.nic.in',
+      icon: '🏺',
+      label: 'Archaeological Survey of India',
+    },
+    {
+      name: 'INTACH',
+      href: 'https://www.intach.org',
+      icon: '🌿',
+      label: 'INTACH Heritage',
+    },
   ];
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer style={{ backgroundColor: '#1a0000', color: '#f5ead5' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Main Footer Content */}
+        {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 bg-primary-600 rounded-lg flex items-center justify-center">
-                <HeartIcon className="w-7 h-7 text-white" />
+              <div
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: '#580000', border: '1px solid rgba(212,175,55,0.4)' }}
+              >
+                <HeartIcon className="w-7 h-7" style={{ color: '#D4AF37' }} />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Indian Heritage</h3>
-                <p className="text-sm text-gray-400">Preserving India's Past, Enriching Our Future</p>
+                <h3
+                  className="text-xl font-bold font-display"
+                  style={{ color: '#D4AF37', fontFamily: "'Cinzel', serif" }}
+                >
+                  Indian Heritage
+                </h3>
+                <p className="text-xs font-serif" style={{ color: '#f5ead5' }}>
+                  Preserving India's Past, Enriching Our Future
+                </p>
               </div>
             </div>
-            
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              We are dedicated to preserving and showcasing India's rich cultural heritage 
-              sites from the Himalayas to the Indian Ocean. Explore ancient temples, majestic 
-              forts, and timeless traditions that define our incredible nation.
+
+            <p className="mb-6 leading-relaxed font-serif text-sm" style={{ color: '#c8b09a' }}>
+              We are dedicated to preserving and showcasing India's rich cultural heritage sites
+              from the Himalayas to the Indian Ocean — ancient temples, majestic forts, and living
+              traditions that define our incredible nation.
             </p>
-            
-            {/* Contact Information */}
+
             <div className="space-y-2">
-              <div className="flex items-center space-x-2 text-gray-300">
-                <EnvelopeIcon className="w-4 h-4" />
-                <span className="text-sm">info@cultureheritage.org</span>
+              <div className="flex items-center space-x-2">
+                <EnvelopeIcon className="w-4 h-4" style={{ color: '#D4AF37' }} />
+                <span className="text-sm font-serif" style={{ color: '#c8b09a' }}>
+                  info@cultureheritage.in
+                </span>
               </div>
-              <div className="flex items-center space-x-2 text-gray-300">
-                <PhoneIcon className="w-4 h-4" />
-                <span className="text-sm">+1 (555) 123-4567</span>
+              <div className="flex items-center space-x-2">
+                <MapPinIcon className="w-4 h-4" style={{ color: '#D4AF37' }} />
+                <span className="text-sm font-serif" style={{ color: '#c8b09a' }}>
+                  New Delhi, India
+                </span>
               </div>
-              <div className="flex items-center space-x-2 text-gray-300">
-                <MapPinIcon className="w-4 h-4" />
-                <span className="text-sm">New Delhi, India</span>
+              <div className="flex items-center space-x-2">
+                <CodeBracketIcon className="w-4 h-4" style={{ color: '#D4AF37' }} />
+                <a
+                  href="https://github.com/AbhayHegde05/Culture-heritage-preservation"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-serif transition-colors"
+                  style={{ color: '#D4AF37' }}
+                >
+                  Open Source on GitHub
+                </a>
               </div>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Explore Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 flex items-center">
-              <GlobeAltIcon className="w-5 h-5 mr-2" />
+            <h4
+              className="text-base font-semibold mb-4 flex items-center font-display uppercase tracking-wider"
+              style={{ color: '#D4AF37', fontFamily: "'Cinzel', serif" }}
+            >
+              <GlobeAltIcon className="w-4 h-4 mr-2" />
               Explore
             </h4>
             <ul className="space-y-2">
@@ -91,7 +136,10 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-gray-300 hover:text-primary-400 transition-colors duration-200"
+                    className="text-sm font-serif transition-colors"
+                    style={{ color: '#c8b09a' }}
+                    onMouseEnter={e => e.target.style.color = '#D4AF37'}
+                    onMouseLeave={e => e.target.style.color = '#c8b09a'}
                   >
                     {link.name}
                   </Link>
@@ -102,8 +150,11 @@ const Footer = () => {
 
           {/* Support Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 flex items-center">
-              <HeartIcon className="w-5 h-5 mr-2" />
+            <h4
+              className="text-base font-semibold mb-4 flex items-center font-display uppercase tracking-wider"
+              style={{ color: '#D4AF37', fontFamily: "'Cinzel', serif" }}
+            >
+              <HeartIcon className="w-4 h-4 mr-2" />
               Support
             </h4>
             <ul className="space-y-2">
@@ -111,7 +162,10 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-gray-300 hover:text-primary-400 transition-colors duration-200"
+                    className="text-sm font-serif transition-colors"
+                    style={{ color: '#c8b09a' }}
+                    onMouseEnter={e => e.target.style.color = '#D4AF37'}
+                    onMouseLeave={e => e.target.style.color = '#c8b09a'}
                   >
                     {link.name}
                   </Link>
@@ -122,8 +176,11 @@ const Footer = () => {
 
           {/* Resources Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 flex items-center">
-              <AcademicCapIcon className="w-5 h-5 mr-2" />
+            <h4
+              className="text-base font-semibold mb-4 flex items-center font-display uppercase tracking-wider"
+              style={{ color: '#D4AF37', fontFamily: "'Cinzel', serif" }}
+            >
+              <AcademicCapIcon className="w-4 h-4 mr-2" />
               Resources
             </h4>
             <ul className="space-y-2">
@@ -131,7 +188,10 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-gray-300 hover:text-primary-400 transition-colors duration-200"
+                    className="text-sm font-serif transition-colors"
+                    style={{ color: '#c8b09a' }}
+                    onMouseEnter={e => e.target.style.color = '#D4AF37'}
+                    onMouseLeave={e => e.target.style.color = '#c8b09a'}
                   >
                     {link.name}
                   </Link>
@@ -141,72 +201,102 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Newsletter Section */}
-        <div className="border-t border-gray-800 mt-12 pt-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        {/* Partners / External Links Row */}
+        <div className="mt-10 pt-8" style={{ borderTop: '1px solid rgba(212,175,55,0.2)' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
             <div>
-              <h4 className="text-lg font-semibold mb-2">Stay Updated</h4>
-              <p className="text-gray-400 text-sm">
-                Subscribe to our newsletter to receive updates about new heritage sites, 
-                preservation efforts, and cultural events.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-              <button className="btn-primary whitespace-nowrap">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Social Links and Copyright */}
-        <div className="border-t border-gray-800 mt-8 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            {/* Social Links */}
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-400">Follow us:</span>
-              <div className="flex space-x-3">
+              <h4
+                className="text-sm font-display uppercase tracking-widest mb-3"
+                style={{ color: '#D4AF37' }}
+              >
+                External Cultural Resources
+              </h4>
+              <div className="flex flex-wrap gap-4">
                 {socialLinks.map((social) => (
                   <a
                     key={social.name}
                     href={social.href}
-                    className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors duration-200"
-                    aria-label={social.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-serif transition-all duration-200"
+                    style={{ backgroundColor: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.2)', color: '#c8b09a' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#D4AF37'; e.currentTarget.style.color = '#D4AF37'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.2)'; e.currentTarget.style.color = '#c8b09a'; }}
                   >
-                    <span className="text-lg">{social.icon}</span>
+                    <span>{social.icon}</span>
+                    <span>{social.name}</span>
                   </a>
                 ))}
               </div>
             </div>
 
-            {/* Copyright */}
-            <div className="text-center md:text-right">
-              <p className="text-sm text-gray-400">
-                © {currentYear} Culture Heritage Preservation. All rights reserved.
-              </p>
-              <div className="flex space-x-4 mt-2 justify-center md:justify-end">
-                <Link to="/about#privacy" className="text-xs text-gray-400 hover:text-primary-400 transition-colors">
-                  Privacy Policy
-                </Link>
-                <Link to="/about#terms" className="text-xs text-gray-400 hover:text-primary-400 transition-colors">
-                  Terms of Service
-                </Link>
-                <Link to="/about#sitemap" className="text-xs text-gray-400 hover:text-primary-400 transition-colors">
-                  Sitemap
-                </Link>
+            {/* Newsletter */}
+            <div>
+              <h4 className="text-sm font-display uppercase tracking-widest mb-3" style={{ color: '#D4AF37' }}>
+                Stay Updated
+              </h4>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 px-4 py-2 rounded-lg text-sm font-serif focus:outline-none"
+                  style={{
+                    backgroundColor: 'rgba(212,175,55,0.06)',
+                    border: '1px solid rgba(212,175,55,0.25)',
+                    color: '#f5ead5',
+                  }}
+                />
+                <button className="btn-primary whitespace-nowrap text-sm">Subscribe</button>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Bottom Bar */}
+        <div className="mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4" style={{ borderTop: '1px solid rgba(212,175,55,0.15)' }}>
+          <p className="text-xs font-serif" style={{ color: '#8a7060' }}>
+            © {currentYear} Culture Heritage Preservation. Open-source project — MIT Licence.
+          </p>
+          <div className="flex space-x-6">
+            <Link
+              to="/privacy"
+              className="text-xs font-display uppercase tracking-wider transition-colors"
+              style={{ color: '#8a7060' }}
+              onMouseEnter={e => e.target.style.color = '#D4AF37'}
+              onMouseLeave={e => e.target.style.color = '#8a7060'}
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              to="/terms"
+              className="text-xs font-display uppercase tracking-wider transition-colors"
+              style={{ color: '#8a7060' }}
+              onMouseEnter={e => e.target.style.color = '#D4AF37'}
+              onMouseLeave={e => e.target.style.color = '#8a7060'}
+            >
+              Terms of Use
+            </Link>
+            <a
+              href="https://github.com/AbhayHegde05/Culture-heritage-preservation"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-display uppercase tracking-wider transition-colors"
+              style={{ color: '#8a7060' }}
+              onMouseEnter={e => e.target.style.color = '#D4AF37'}
+              onMouseLeave={e => e.target.style.color = '#8a7060'}
+            >
+              GitHub
+            </a>
+          </div>
+        </div>
       </div>
 
-      {/* Bottom Wave Pattern */}
-      <div className="h-2 bg-gradient-to-r from-primary-600 via-accent-500 to-primary-600"></div>
+      {/* Gold accent bottom strip */}
+      <div
+        className="h-1"
+        style={{ background: 'linear-gradient(to right, #580000, #D4AF37, #b38728, #D4AF37, #580000)' }}
+      />
     </footer>
   );
 };
